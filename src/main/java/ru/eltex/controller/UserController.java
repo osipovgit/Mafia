@@ -1,6 +1,7 @@
-package ru.eltex;
+package ru.eltex.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.eltex.entity.User;
 
 /**
  * Класс-контроллер
@@ -19,13 +20,13 @@ public class UserController {
     @RequestMapping(value = "/get_user")
     public User getUser(@RequestParam("id") Integer id) {
         System.out.println(id);
-        return new User(1, "Boris", 900);
+        return new User(1, "Boris", "", 900);
     }
 
     @RequestMapping("/get_user/{id}")
     public User getUser1(@PathVariable("id") Integer id) {
         System.out.println(id);
-        return new User(1, "Boris", 939399393);
+        return new User(1, "Boris", "", 939399393);
     }
 
 }

@@ -1,4 +1,4 @@
-package ru.eltex;
+package ru.eltex.entity;
 
 
 import lombok.AllArgsConstructor;
@@ -18,6 +18,8 @@ public class User {
     @Getter @Setter private Integer id;
     /** Поле имя */
     @Getter @Setter private String name;
+    /** Поле роль */
+    @Getter @Setter private String destiny;
     /** Поле количество игр */
     @Getter @Setter private Integer countGame;
 
