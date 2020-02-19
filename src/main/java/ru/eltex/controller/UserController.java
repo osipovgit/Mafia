@@ -17,16 +17,16 @@ public class UserController {
      * @return Объект пользователя
      * @see User#User()
      */
-    @RequestMapping(value = "/get_user")
-    public User getUser(@RequestParam("id") Integer id) {
-        System.out.println(id);
-        return new User(1, "Boris", "", 900);
-    }
+//    @RequestMapping(value = "/get_user")
+//    public User getUser(@RequestParam("id") Integer id) {
+//        System.out.println(id);
+//        return ;
+//    }
 
-    @RequestMapping("/get_user/{id}")
-    public User getUser1(@PathVariable("id") Integer id) {
-        System.out.println(id);
-        return new User(1, "Boris", "", 939399393);
-    }
+//    @RequestMapping("/get_user/{id}")
+//    public User getUser1(@PathVariable("id") Integer id) {
+//        System.out.println(id);
+//        return new User(1, "Boris", "", 939399393);
+//    }
 
 }
