@@ -50,22 +50,17 @@
     </div>
 </nav>
 <div style="width: 20em; height: 20em; position: absolute; top: 20%; left: 40%; right: 50%">
-    <form>
+    <form action="/signup" method="post">
         <div class="form-group">
             <label for="login">login</label>
             <input type="login" class="form-control" id="login" aria-describedby="emailHelp"
                    placeholder="Имя любимое моё">
-            <small id="mesHelp" class="form-text text-muted">Введите имя. Например: Boris</small>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
             <input type="password" class="form-control" id="password" placeholder="Пароль">
         </div>
-        <div class="form-group">
-            <label for="password">Confirm password</label>
-            <input type="password" class="form-control" id="passwordCheck" placeholder="Подтвердите паоль">
-        </div>
-        <button type="button" class="btn btn-primary">Кнопочка</button>
+        <button type="submit" class="btn btn-primary">Кнопочка</button>
     </form>
 </div>
 </body>

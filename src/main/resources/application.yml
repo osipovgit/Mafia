@@ -4,3 +4,10 @@ spring:
   thymeleaf:
     prefix: file:src/main/resources/templates/
     cache: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/mafia
+    username: root
+    password: 1236
+  jpa:
+    hibernate:
+      ddl-auto: update

@@ -1,13 +1,9 @@
 package ru.eltex.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Класс представления пользователя
@@ -15,14 +11,15 @@ import javax.persistence.Id;
  * @author Evgesha
  * @version v1.0
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@Entity
+@Table(name = "user")
 public class User {
     /**
      * Поле идентификатора
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     @Setter
     private Integer id;
@@ -31,7 +28,19 @@ public class User {
      */
     @Getter
     @Setter
-    private String name;
+    private String login;
+    /**
+     * Поле пароля
+     */
+    @Getter
+    @Setter
+    private String password;
+    /**
+     * Поле статуса игрока
+     */
+    @Getter
+    @Setter
+    private Boolean active;
     /**
      * Поле роль
      */
@@ -39,17 +48,11 @@ public class User {
     @Setter
     private String destiny;
     /**
-     * Поле готовности (default = 0)
+     * Поле готовности (default = false)
      */
     @Getter
     @Setter
-    private Integer ready = 0;
-    /**
-     * Поле статуса игрока (в игре/выбыл) (default = 1)
-     */
-    @Getter
-    @Setter
-    private Integer alive = 1;
+    private Boolean ready;
     /**
      * Поле количество игр
      */
@@ -57,13 +60,12 @@ public class User {
     @Setter
     private Integer countGame;
 
-    /**
-     * Метод преобразования пользователя в CSV формат
-     *
-     * @return возвращает пользователя в формате CSV
-     */
-    public String toCSV() {
-        return this.id + ":" + this.name + ":" + this.destiny + ":" + this.ready + ":" + this.alive + ":" + this.countGame;
+    public User() {
+    }
+
+    public User(String login, String password) {
+          this.login = login;
+          this.password = password;
     }
 
 }
