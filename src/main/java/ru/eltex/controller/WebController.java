@@ -18,31 +18,6 @@ import java.util.Map;
 
 @Controller
 public class WebController {
-    @Autowired
-    private UserRepo userRepo;
-
-    @RequestMapping
-    public String authorization(Model model) {
-        return "authorization.html";
-    }
-
-    @RequestMapping("/signup")
-    public String signup(Model model) {
-        return "signup.html";
-    }
-
-    @PostMapping("/signup")
-    public String signUpNewUser (User user, Map<String, Object> model) {
-        User userFromDb = userRepo.findByLogin(user.getLogin());
-        if (userFromDb != null){
-            model.put("message", "User exists!");
-            return "signup";
-        }
-        user.setActive(true);
-        user.setReady(true);
-        userRepo.save(user);
-        return "redirect:/signup";
-    }
 
     @RequestMapping("/mafia")
     public String index(Model model) {

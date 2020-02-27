@@ -28,7 +28,7 @@ public class User {
      */
     @Getter
     @Setter
-    private String login;
+    private String username;
     /**
      * Поле пароля
      */
@@ -63,9 +63,11 @@ public class User {
     public User() {
     }
 
-    public User(String login, String password) {
-          this.login = login;
+    public User(String username, String password, Boolean active, Boolean ready) {
+          this.username = username;
           this.password = password;
+          this.active = active;
+          this.ready = ready;
     }
 
 }

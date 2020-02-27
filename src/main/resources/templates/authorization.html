@@ -1,12 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Sign in</title>
 </head>
-<body>
 
+<!--<script type="text/javascript">-->
+<!--    function tmo() {-->
+<!--        $.get("/get_user?id=1").then(function (value) {-->
+<!--                console.log(value);-->
+<!--                $("#test").html(value);-->
+<!--            },-->
+<!--            function (reason) {-->
+<!--                console.log(reason);-->
+<!--            });-->
+<!--        $(document).ready(function () {-->
+<!--            alert(123);-->
+<!--            $("#test").html("<h1>TMP</h1>");-->
+<!--            setInterval(tmo, 3000);-->
+<!--        })-->
+<!--    }-->
+<!--</script>-->
+
+<body style="background-color: rgba(238,183,131,0.89)">
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand" href="#" style="color: white">Мафия</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+            aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="#" style="color: white">Домик <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="http://www.printplay.ru/kartochnaya-igra-mafiya-karty/" style="color: white">Правила
+                    (да-да, они есть) <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Не работает, но тыкни</button>
+        </form>
+    </div>
+</nav>
+<div style="width: 20em; height: 20em; position: absolute; top: 20%; left: 40%; right: 50%">
+    <form th:action="@{/}" method="post">
+        <div class="form-group">
+            <label>login</label>
+            <input type="text" class="form-control" name="username" placeholder="Имя любимое моё">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Пароль">
+        </div>
+        <button type="submit" class="btn btn-primary">Кнопочка</button>
+        <button th:href="signup" class="btn btn-primary">Регистрация</button>
+    </form>
+</div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <head>
@@ -50,15 +51,14 @@
     </div>
 </nav>
 <div style="width: 20em; height: 20em; position: absolute; top: 20%; left: 40%; right: 50%">
-    <form action="/signup" method="post">
+    <form th:action="@{/signup}" method="post">
         <div class="form-group">
-            <label for="login">login</label>
-            <input type="login" class="form-control" id="login" aria-describedby="emailHelp"
-                   placeholder="Имя любимое моё">
+            <label>login</label>
+            <input type="text" class="form-control" name="username" placeholder="Имя любимое моё">
         </div>
         <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Пароль">
+            <label>Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Пароль">
         </div>
         <button type="submit" class="btn btn-primary">Кнопочка</button>
     </form>
