@@ -3,6 +3,7 @@ package ru.eltex.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.eltex.entity.User;
@@ -18,11 +19,6 @@ import java.util.Map;
 
 @Controller
 public class WebController {
-
-    @RequestMapping("/mafia")
-    public String index(Model model) {
-        return "index1";
-    }
 
     @RequestMapping("/playroom")
     public String playroom(Model model) {

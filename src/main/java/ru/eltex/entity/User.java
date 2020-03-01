@@ -42,12 +42,6 @@ public class User {
     @Setter
     private Boolean active;
     /**
-     * Поле роль
-     */
-    @Getter
-    @Setter
-    private String destiny;
-    /**
      * Поле готовности (default = false)
      */
     @Getter
@@ -69,5 +63,5 @@ public class User {
           this.active = active;
           this.ready = ready;
     }
-
 }
+// TODO Кажется самое время подумать над таблицами и все учесть, займись блять

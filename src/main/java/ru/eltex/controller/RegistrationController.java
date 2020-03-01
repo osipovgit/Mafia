@@ -1,6 +1,5 @@
 package ru.eltex.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,10 +10,17 @@ import ru.eltex.repos.UserRepo;
 import java.util.Map;
 
 @Controller
-
 public class RegistrationController {
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
+
+    public RegistrationController(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    @RequestMapping("/")
+    public String signIn(Model model) {
+        return "authorization.html";
+    }
 
     @RequestMapping("/signup")
     public String signUp(Model model) {
@@ -29,8 +35,10 @@ public class RegistrationController {
             return "signup";
         }
         user.setActive(true);
-        user.setReady(true);
+        user.setReady(false);
+        user.setCountGame(0);
         userRepo.save(user);
         return "redirect:/";
     }
 }
+//TODO Не веркает вход, ссылка на регистрацию тоже

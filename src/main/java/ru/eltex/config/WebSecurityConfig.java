@@ -37,9 +37,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
                 .passwordEncoder(NoOpPasswordEncoder.getInstance())
-                .usersByUsernameQuery("select username, password, active from user where login=?");
+                .usersByUsernameQuery("select username, password, active from user where username=?");
     }
 }
 /*
-TODO: ПРИКРУТИ КНПОЧКУ ЛОГАУТ И ПОЧИНИ ЭТО ГОВНО
+TODO: Чекнуть ЛОГАУТ, не дошли еще до home страницы..
  */
