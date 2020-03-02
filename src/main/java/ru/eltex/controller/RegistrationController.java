@@ -11,8 +11,8 @@ import java.util.Map;
 
 @Controller
 public class RegistrationController {
-    private final UserRepo userRepo;
 
+    private final UserRepo userRepo;
     public RegistrationController(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
@@ -45,7 +45,7 @@ public class RegistrationController {
         user.setReady(false);
         user.setCountGame(0L);
         userRepo.save(user);
-        return "redirect:/authorization.html";
+        return "redirect:/authorization";
     }
 }
 //TODO Не веркает вход

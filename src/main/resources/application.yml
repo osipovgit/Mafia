@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/mafia
     username: root
-    password: 1236
+    password: 12345678
   jpa:
     hibernate:
       ddl-auto: update

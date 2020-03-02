@@ -2,13 +2,50 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
+    <meta charset="UTF-8">
     <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
 </head>
-<body>
-<h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Sign Out"/>
-</form>
-<a href="/bye">fewfw</a>
+<body style="background-color: rgba(238,183,131,0.89)">
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand" href="#" style="color: white">Мафия</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+            aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="#" style="color: white">Домик <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="http://www.printplay.ru/kartochnaya-igra-mafiya-karty/" style="color: white">Правила
+                    (да-да, они есть) <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <form th:action="@{/logout}" method="post">
+                    <input type="submit"
+                           value="Лагает, он же - LogOut, он же - SignOut, он же - уйти из этого Ада, также в нашей стране известен как просто ВЫХОД из аккаунта..."
+                           style="margin-top: 0.8%; background-color: #343940; color: white; border: 0"/>
+                </form>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="">Не трожь, не понравится</button>
+        </form>
+    </div>
+</nav>
+<h1 th:inline="text" style="font-size: 50em; font-family: revert; margin-top: -3%">Hello <!--[[${#httpServletRequest.remoteUser}]]--></h1>
+<input type="button" class="btn btn-warning rounded-circle" style="transform:rotate(-90deg); position: absolute; top: 47%; left: 76.7%; width:18%; height:25%; font-size: 6em"; value="Начать">
+
+<!--<form th:action="@{/logout}" method="post">-->
+<!--    <input type="submit" value="Sign Out"/>-->
+<!--</form>-->
 </body>
 </html>
