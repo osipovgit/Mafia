@@ -2,8 +2,12 @@ package ru.eltex.entity;
 
 
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Класс представления пользователя
@@ -22,7 +26,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     @Setter
-    private Integer id;
+    private Long id;
     /**
      * Поле имя
      */
@@ -52,7 +56,10 @@ public class User {
      */
     @Getter
     @Setter
-    private Integer countGame;
+    private Long countGame;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User_GameRooms> idRoom;
 
     public User() {
     }

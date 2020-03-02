@@ -2,8 +2,8 @@ package ru.eltex.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ru.eltex.entity.User;
 import ru.eltex.repos.UserRepo;
 
@@ -17,12 +17,19 @@ public class RegistrationController {
         this.userRepo = userRepo;
     }
 
-    @RequestMapping("/")
-    public String signIn(Model model) {
-        return "authorization.html";
+    @PostMapping("/")
+    public String signIn(User user, Map<String, Object> model) {
+        User userRepoByUsernameAndPassword = userRepo.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+        if (userRepoByUsernameAndPassword == null) {
+            model.put("message", "User exists!");
+            return "/authorization.html";
+        }
+        user.setActive(true);
+        user.setReady(false);
+        return "home.html";
     }
 
-    @RequestMapping("/signup")
+    @GetMapping("/signup")
     public String signUp(Model model) {
         return "signup.html";
     }
@@ -32,13 +39,13 @@ public class RegistrationController {
         User userFromDb = userRepo.findByUsername(user.getUsername());
         if (userFromDb != null) {
             model.put("message", "User exists!");
-            return "signup";
+            return "signup.html";
         }
         user.setActive(true);
         user.setReady(false);
-        user.setCountGame(0);
+        user.setCountGame(0L);
         userRepo.save(user);
-        return "redirect:/";
+        return "redirect:/authorization.html";
     }
 }
-//TODO Не веркает вход, ссылка на регистрацию тоже
+//TODO Не веркает вход

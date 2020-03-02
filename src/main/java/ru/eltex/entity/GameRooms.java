@@ -5,20 +5,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * The type Game room.
  */
 @Data
 @Entity
-@Table(name = "room")
-public class GameRoom {
+@Table(name = "rooms")
+public class GameRooms {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     @Setter
-    private Integer id_room;
+    private Long id_room;
 
     @Getter
     @Setter
@@ -54,5 +55,7 @@ public class GameRoom {
     @Setter
     private Boolean girlChoice;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User_GameRooms> idUser;
 
 }

@@ -20,6 +20,11 @@ import java.util.Map;
 @Controller
 public class WebController {
 
+    @RequestMapping("/")
+    public String signInView(Model model) {
+        return "hello.html";
+    }
+
     @RequestMapping("/playroom")
     public String playroom(Model model) {
         return "playroom.html";
@@ -35,7 +40,7 @@ public class WebController {
     @RequestMapping("/bye")
     public String bye(Model model) {
 //        model.addAttribute("name", new User(1, "Boris", 900));
-        return "bye";
+        return "bye.html";
     }
 
 }
