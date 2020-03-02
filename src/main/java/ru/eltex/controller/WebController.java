@@ -40,6 +40,7 @@ public class WebController {
     @RequestMapping("/bye")
     public String bye(Model model) {
 //        model.addAttribute("name", new User(1, "Boris", 900));
+        System.out.println("ЧТО_ТО_ЕСТЬ");
         return "bye.html";
     }
 

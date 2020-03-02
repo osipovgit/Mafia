@@ -9,7 +9,7 @@ import ru.eltex.entity.User;
  * @version v1.0
  */
 @RestController
-public class UserController {
+public class GameController {
 
     /**
      * Метод для сопоставления с точкой входа <b>/get_user</b>

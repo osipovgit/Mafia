@@ -58,9 +58,6 @@ public class User {
     @Setter
     private Long countGame;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<User_GameRooms> idRoom;
-
     public User() {
     }
 
