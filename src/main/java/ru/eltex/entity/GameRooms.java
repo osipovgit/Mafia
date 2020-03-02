@@ -1,8 +1,6 @@
 package ru.eltex.entity;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,11 +12,15 @@ import java.util.List;
 @Entity
 @Table(name = "rooms")
 public class GameRooms {
-
+    /**
+     * Поле id комнаты (пусть будет, иначе не работает)
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id_room;
-
+    /**
+     * Поле номер детской комнаты
+     */
     private Integer number;
     /**
      * Поле роль
@@ -40,7 +42,9 @@ public class GameRooms {
      * Поле выбор мадамы
      */
     private Boolean girlChoice;
-
+    /**
+     * Поле list пользователей, находящихся в игре
+     */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<User> users;
 

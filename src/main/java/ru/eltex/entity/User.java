@@ -38,12 +38,6 @@ public class User {
     @Setter
     private String password;
     /**
-     * Поле статуса игрока
-     */
-    @Getter
-    @Setter
-    private Boolean active;
-    /**
      * Поле готовности (default = false)
      */
     @Getter
@@ -59,11 +53,9 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password, Boolean active, Boolean ready) {
-          this.username = username;
-          this.password = password;
-          this.active = active;
-          this.ready = ready;
+    public User(String username, String password, Boolean ready) {
+        this.username = username;
+        this.password = password;
+        this.ready = ready;
     }
 }
-// TODO Кажется самое время подумать над таблицами и все учесть, займись блять

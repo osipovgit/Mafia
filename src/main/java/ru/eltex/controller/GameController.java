@@ -9,6 +9,7 @@ import ru.eltex.entity.User;
  * @version v1.0
  */
 @RestController
+@RequestMapping("/playroom")
 public class GameController {
 
     /**
