@@ -2,8 +2,6 @@ package ru.eltex.entity;
 
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -22,32 +20,22 @@ public class User {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Getter
-    @Setter
     private Long id;
     /**
      * Поле имя
      */
-    @Getter
-    @Setter
     private String username;
     /**
      * Поле пароля
      */
-    @Getter
-    @Setter
     private String password;
     /**
      * Поле готовности (default = false)
      */
-    @Getter
-    @Setter
     private Boolean ready;
     /**
      * Поле количество игр
      */
-    @Getter
-    @Setter
     private Long countGame;
 
     public User() {

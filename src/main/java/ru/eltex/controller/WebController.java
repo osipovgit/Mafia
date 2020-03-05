@@ -25,9 +25,14 @@ public class WebController {
         return "hello.html";
     }
 
-    @RequestMapping("/playroom")
+    @RequestMapping("/playrooms")
     public String playroom(Model model) {
-        return "playroom.html";
+        return "playrooms.html";
+    }
+
+    @GetMapping("/playrooms/create_room")
+    public String showCreateView(Model model) {
+        return "create_room";
     }
 
 //    @RequestMapping("/hello")
