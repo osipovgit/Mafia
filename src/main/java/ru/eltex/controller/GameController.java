@@ -30,11 +30,11 @@ public class GameController {
 //     */
 
 
-    @PostMapping("/create_room")
-    public String createRoom(@RequestParam("id") Long id) {
-        System.out.println(id);
-        return "/playroom/" + roomNumber;
-    }
+//    @PostMapping("/create_room")
+//    public String createRoom(@RequestParam("id") Long id) {
+//        System.out.println(id);
+//        return "/playroom/" + roomNumber;
+//    }
 
 //    @RequestMapping("/get_user/{id}")
 //    public User getUser1(@PathVariable("id") Integer id) {
@@ -42,7 +42,7 @@ public class GameController {
 //        return new User(1, "Boris", "", 939399393);
 //    }
 
-//    @GetMapping("{roomNumber}")
+//    @GetMapping("/{roomNumber}")
 //    public GameController roomId(@PathVariable int roomNumber){
 //
 //    }

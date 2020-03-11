@@ -1,15 +1,8 @@
 package ru.eltex.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.eltex.entity.User;
-import ru.eltex.repos.UserRepo;
-
-import java.util.Map;
 
 /**
  * Класс-контроллер
@@ -30,23 +23,11 @@ public class WebController {
         return "playrooms.html";
     }
 
-    @GetMapping("/playrooms/create_room")
-    public String showCreateView(Model model) {
-        return "create_room";
-    }
-
 //    @RequestMapping("/hello")
 //    public String hello(Model model) {
 //        model.addAttribute("name",
 //                new User(1, "Boris", 900));
 //        return "hello";
 //    }
-
-    @RequestMapping("/bye")
-    public String bye(Model model) {
-//        model.addAttribute("name", new User(1, "Boris", 900));
-        System.out.println("ЧТО_ТО_ЕСТЬ");
-        return "bye.html";
-    }
 
 }

@@ -21,7 +21,7 @@ public class GameRooms {
     /**
      * Поле номер детской комнаты милиции
      */
-    private Integer number;
+    private Long number;
     /**
      * Поле роль
      */
