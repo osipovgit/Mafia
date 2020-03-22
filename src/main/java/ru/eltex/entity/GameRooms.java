@@ -54,6 +54,6 @@ public class GameRooms {
      * Так и не смог пройти фейсконтроль в БД
      */
     @Transient
-    private Integer hostId;
+    private User hostId;
 
 }

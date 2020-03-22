@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Mafia</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript">
+        function create() {
+            $.get().then(function (data) {
+                console.log(data)
+            });
+            location.href = "/playrooms/1";
+        }
+    </script>
 </head>
 <body>
 <h1>Playrooms</h1> <br>
 <a onclick="">Создать комнату</a> <br>
-<!--<a href="/">Вернуться к маме</a> <br>-->
+<button type="submit" onclick="create()">Создать комнату</button>
 </body>
 </html>

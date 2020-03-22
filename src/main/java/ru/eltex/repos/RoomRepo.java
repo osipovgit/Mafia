@@ -5,4 +5,6 @@ import ru.eltex.entity.GameRooms;
 
 public interface RoomRepo extends JpaRepository<GameRooms, Long> {
     GameRooms findByNumber(Long number);
+
+    GameRooms findAllByNumber(Long number);
 }
