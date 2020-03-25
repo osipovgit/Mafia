@@ -1,5 +1,6 @@
 package ru.eltex.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -24,14 +25,18 @@ public class RegistrationController {
     }
 
     @PostMapping("/")
-    public String signIn(User user, Map<String, Object> model) {
-        User userRepoByUsername = userRepo.findByUsername(user.getUsername());
+    public String signIn(User user, Model model) throws JsonProcessingException {
+        User userRepoByUsername = userRepo.findByUsernameOrId(user.getUsername(), null);
         if (userRepoByUsername == null || !passwordEncoder.matches(user.getPassword(), userRepoByUsername.getPassword())) {
-            model.put("message", "User exists!");
             return "/authorization.html";
         }
-        user.setReady(false);
-        return "home.html";
+//        userRepoByUsername.setReady(false);
+//        userRepoByUsername.setPassword(null);
+//        ObjectMapper mapper = new ObjectMapper();
+//        String str = mapper.writeValueAsString(userRepoByUsername);
+//        System.out.println(str);
+//        model.addAttribute("userJson", str);
+        return "redirect:/home/id" + userRepoByUsername.getId();
     }
 
     @GetMapping("/signup")
@@ -41,7 +46,7 @@ public class RegistrationController {
 
     @PostMapping("/signup")
     public String signUpNewUser(User user, Map<String, Object> model) {
-        User userFromDb = userRepo.findByUsername(user.getUsername());
+        User userFromDb = userRepo.findByUsernameOrId(user.getUsername(), null);
         if (userFromDb != null) {
             model.put("message", "User exists!");
             return "signup.html";

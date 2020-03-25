@@ -47,13 +47,12 @@ public class GameRooms {
     /**
      * Поле list пользователей, находящихся в комнате №number
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<User> users;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private User users;
     /**
      * Поле хост БД
      * Так и не смог пройти фейсконтроль в БД
      */
-    @Transient
-    private User hostId;
+    private Long hostId;
 
 }

@@ -32,11 +32,11 @@ public class GameController {
 //     * @return Объект пользователя
 //     * @see User#User()
 //     */
-//    @GetMapping
+    @PostMapping
     public GameRooms createRoom(User user) {
         GameRooms gameRooms = new GameRooms();
-        gameRooms.setUsers((List<User>) user);
-        gameRooms.setHostId(user);
+        gameRooms.setUsers(user);
+        gameRooms.setHostId(user.getId());
         gameRooms.setNumber(++roomNumber);
         roomRepo.save(gameRooms);
         return gameRooms;
