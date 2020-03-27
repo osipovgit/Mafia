@@ -1,11 +1,15 @@
 package ru.eltex.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.eltex.entity.GameRooms;
 import ru.eltex.entity.User;
 import ru.eltex.repos.RoomRepo;
+import ru.eltex.repos.UserRepo;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -20,6 +24,9 @@ public class GameController {
 
     private long roomNumber = 0;
 
+    @Autowired
+    private UserRepo userRepo;
+
     private final RoomRepo roomRepo;
 
     public GameController(RoomRepo roomRepo) {
@@ -33,10 +40,12 @@ public class GameController {
 //     * @see User#User()
 //     */
     @PostMapping
-    public GameRooms createRoom(User user) {
+    public GameRooms createRoom(HttpServletRequest request) {
         GameRooms gameRooms = new GameRooms();
-        gameRooms.setUsers(user);
-        gameRooms.setHostId(user.getId());
+        Cookie[] cookies = request.getCookies();
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[1].getValue()));
+        gameRooms.setUsers(userRepoById);
+        gameRooms.setHostId(Long.parseLong(cookies[1].getValue()));
         gameRooms.setNumber(++roomNumber);
         roomRepo.save(gameRooms);
         return gameRooms;
