@@ -1,6 +1,5 @@
 package ru.eltex.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import ru.eltex.entity.User;
 import ru.eltex.repos.UserRepo;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @Controller
@@ -25,18 +26,20 @@ public class RegistrationController {
     }
 
     @PostMapping("/")
-    public String signIn(User user, Model model) throws JsonProcessingException {
+    public String signIn(User user, Model model, HttpServletResponse response) {
         User userRepoByUsername = userRepo.findByUsernameOrId(user.getUsername(), null);
         if (userRepoByUsername == null || !passwordEncoder.matches(user.getPassword(), userRepoByUsername.getPassword())) {
             return "/authorization.html";
         }
+        Cookie cookie = new Cookie("userId", userRepoByUsername.getId().toString());
+        response.addCookie(cookie);
 //        userRepoByUsername.setReady(false);
 //        userRepoByUsername.setPassword(null);
 //        ObjectMapper mapper = new ObjectMapper();
 //        String str = mapper.writeValueAsString(userRepoByUsername);
 //        System.out.println(str);
 //        model.addAttribute("userJson", str);
-        return "redirect:/home/id" + userRepoByUsername.getId();
+        return "redirect:/home";
     }
 
     @GetMapping("/signup")

@@ -13,6 +13,10 @@ import ru.eltex.entity.User;
 import ru.eltex.repos.RoomRepo;
 import ru.eltex.repos.UserRepo;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,9 +41,11 @@ public class WebController {
         return "hello.html";
     }
 
-    @RequestMapping("/home/id{id}")
-    public String homePageView(Model model, @PathVariable("id") Long id) {
-        User userRepoById = userRepo.findByUsernameOrId(null, id);
+    @RequestMapping("/home")
+    public String homePageView(Model model, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        System.out.println(cookies[1].getValue()); //TODO: удалить проверочку id from cookie в sout
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[1].getValue()));
         userRepoById.setReady(false);
         userRepoById.setPassword(null);
 //        ObjectMapper mapper = new ObjectMapper();
@@ -51,7 +57,9 @@ public class WebController {
 
     //    TODO: Фикс возможность зайти под любого пользователя (мб куки), как сохранить где-то под кого зашли? потом еще и комнаты надо сверять
     @RequestMapping("/playrooms")
-    public String playRoomsView(Model model) {
+    public String playRoomsView(Model model, User user) {
+        User repoByUsername = userRepo.findByUsernameOrId(user.getUsername(), null);
+        System.out.println(user);
         return "playrooms.html";
     }
 

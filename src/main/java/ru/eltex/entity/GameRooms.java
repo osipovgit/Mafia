@@ -3,7 +3,6 @@ package ru.eltex.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * The type Game room.
@@ -47,7 +46,7 @@ public class GameRooms {
     /**
      * Поле list пользователей, находящихся в комнате №number
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private User users;
     /**
      * Поле хост БД
