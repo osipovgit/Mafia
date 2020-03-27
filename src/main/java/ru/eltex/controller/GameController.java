@@ -2,7 +2,9 @@ package ru.eltex.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.eltex.entity.GameRooms;
 import ru.eltex.entity.User;
 import ru.eltex.repos.RoomRepo;
@@ -10,7 +12,6 @@ import ru.eltex.repos.UserRepo;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * Класс-контроллер
@@ -40,7 +41,7 @@ public class GameController {
 //     * @see User#User()
 //     */
     @PostMapping
-    public GameRooms createRoom(HttpServletRequest request) {
+    public String createRoom(HttpServletRequest request, Model model) {
         GameRooms gameRooms = new GameRooms();
         Cookie[] cookies = request.getCookies();
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[1].getValue()));
@@ -48,7 +49,18 @@ public class GameController {
         gameRooms.setHostId(Long.parseLong(cookies[1].getValue()));
         gameRooms.setNumber(++roomNumber);
         roomRepo.save(gameRooms);
-        return gameRooms;
+        return "redirect:/playrooms/" + gameRooms.getNumber();
+    }
+
+    //    @DeleteMapping
+    public String deleteRoom(Long room_number, HttpServletRequest request, Model model) {
+        Cookie[] cookies = request.getCookies();
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[1].getValue()));
+        GameRooms gameRooms = roomRepo.findByNumber(room_number);
+        if (userRepoById.getId().equals(gameRooms.getHostId())) {       //TODO: Think about condition
+            roomRepo.Delete(room_number);
+        }
+        return "redirect:/playrooms";
     }
 
 //    @RequestMapping("/get_user/{id}")
