@@ -1,7 +1,5 @@
 package ru.eltex.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +13,7 @@ import ru.eltex.repos.UserRepo;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Класс-контроллер
@@ -44,8 +39,13 @@ public class WebController {
     @RequestMapping("/home")
     public String homePageView(Model model, HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        System.out.println(cookies[1].getValue()); //TODO: удалить проверочку id from cookie в sout
-        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[1].getValue()));
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        System.out.println(cookies[0].getValue()); //TODO: удалить проверочку id from cookie в sout
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         userRepoById.setReady(false);
         userRepoById.setPassword(null);
 //        ObjectMapper mapper = new ObjectMapper();

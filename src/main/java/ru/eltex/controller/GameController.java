@@ -44,9 +44,14 @@ public class GameController {
     public String createRoom(HttpServletRequest request, Model model) {
         GameRooms gameRooms = new GameRooms();
         Cookie[] cookies = request.getCookies();
-        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[1].getValue()));
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         gameRooms.setUsers(userRepoById);
-        gameRooms.setHostId(Long.parseLong(cookies[1].getValue()));
+        gameRooms.setHostId(Long.parseLong(cookies[0].getValue()));
         gameRooms.setNumber(++roomNumber);
         roomRepo.save(gameRooms);
         return "redirect:/playrooms/" + gameRooms.getNumber();
@@ -55,7 +60,12 @@ public class GameController {
     //    @DeleteMapping
     public String deleteRoom(Long room_number, HttpServletRequest request, Model model) {
         Cookie[] cookies = request.getCookies();
-        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[1].getValue()));
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findByNumber(room_number);
         if (userRepoById.getId().equals(gameRooms.getHostId())) {       //TODO: Think about condition
             roomRepo.Delete(room_number);
