@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.eltex.entity.GameRooms;
 import ru.eltex.entity.User;
 import ru.eltex.repos.RoomRepo;
@@ -36,11 +37,6 @@ public class WebController {
         return "hello.html";
     }
 
-//    @RequestMapping("/playrooms/create")
-//    public String create(Model model) {
-//        return "";
-//    }
-
     @RequestMapping("/home")
     public String homePageView(Model model, HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -68,7 +64,7 @@ public class WebController {
     }
 
     @RequestMapping("/playrooms/{roomNumber}")
-    public String roomId(Model model, @PathVariable long roomNumber) {
+    public String roomId(Model model, @PathVariable(value = "roomNumber") String roomNumber) {
         return "letsPlay.html";
     }
 

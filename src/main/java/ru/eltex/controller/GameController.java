@@ -3,10 +3,7 @@ package ru.eltex.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.eltex.entity.GameRooms;
 import ru.eltex.entity.User;
 import ru.eltex.repos.RoomRepo;
@@ -44,9 +41,7 @@ public class GameController {
 //     * @see User#User()
 //     */
     @GetMapping("/create")
-    public String createRoom(HttpServletRequest request, Model model, ServletRequest servletRequest) {
-        servletRequest.isAsyncStarted();
-        System.out.println("миру пиздец, все очень плохо");
+    public String createRoom(HttpServletRequest request, Model model) {
         GameRooms gameRooms = new GameRooms();
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies)
@@ -59,11 +54,13 @@ public class GameController {
         gameRooms.setHostId(Long.parseLong(cookies[0].getValue()));
         gameRooms.setNumber(++roomNumber);
         roomRepo.save(gameRooms);
-        return "redirect:/playrooms/" + gameRooms.getNumber() + "";
+        System.out.println("Создана комната: " + gameRooms.getNumber());
+        return "/playrooms/" + gameRooms.getNumber() + "";
     }
 
-    //    @DeleteMapping
-    public String deleteRoom(Long room_number, HttpServletRequest request, Model model) {
+    @GetMapping("/{roomNumber}/delete")
+    public String deleteRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        System.out.println("Удалена комната номер: " + roomNumber);
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies)
             if (cookie.getName().equals("userId")) {
@@ -71,11 +68,11 @@ public class GameController {
                 break;
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
-        GameRooms gameRooms = roomRepo.findByNumber(room_number);
+        GameRooms gameRooms = roomRepo.findByNumber(roomNumber);
         if (userRepoById.getId().equals(gameRooms.getHostId())) {       //TODO: Think about condition
-            roomRepo.Delete(room_number);
+            roomRepo.Delete(roomNumber);
         }
-        return "redirect:/playrooms";
+        return "/playrooms";
     }
 
 //    @RequestMapping("/get_user/{id}")
