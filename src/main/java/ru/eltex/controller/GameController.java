@@ -40,7 +40,7 @@ public class GameController {
 //     * @return Объект пользователя
 //     * @see User#User()
 //     */
-    @PostMapping
+    @PostMapping("/create")
     public String createRoom(HttpServletRequest request, Model model) {
         GameRooms gameRooms = new GameRooms();
         Cookie[] cookies = request.getCookies();

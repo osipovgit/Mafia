@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Mafia</title>
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <!--    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <script type="text/javascript">
         function create() {
-            $.post('/playrooms').then(function () {
-                console.log(data)
-            });
-            location.href = "/playrooms/1";
+            $.post('/playrooms/create').then(function () {
+                // alert("hifrfrf");
+                console.log("kill me")
+            })/*.success(alert("yep")).error(alert("nope"))*/;
+            // location.href = data;
         }
     </script>
 </head>
 <body>
 <h1>Playrooms</h1> <br>
-<a onclick="">Создать комнату</a> <br>
 <button type="submit" onclick="create()">Создать комнату</button>
 </body>
 </html>
