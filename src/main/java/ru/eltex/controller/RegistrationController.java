@@ -33,7 +33,6 @@ public class RegistrationController {
         }
         Cookie cookie = new Cookie("userId", userRepoByUsername.getId().toString());
         response.addCookie(cookie);
-//        userRepoByUsername.setReady(false);
 //        userRepoByUsername.setPassword(null);
 //        ObjectMapper mapper = new ObjectMapper();
 //        String str = mapper.writeValueAsString(userRepoByUsername);
@@ -54,7 +53,6 @@ public class RegistrationController {
             model.put("message", "User exists!");
             return "signup.html";
         }
-        user.setReady(false);
         user.setCountGame(0L);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);

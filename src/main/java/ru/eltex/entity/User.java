@@ -30,10 +30,6 @@ public class User {
      */
     private String password;
     /**
-     * Поле готовности (default = false)
-     */
-    private Boolean ready;
-    /**
      * Поле количество игр
      */
     private Long countGame;
@@ -41,9 +37,8 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password, Boolean ready) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.ready = ready;
     }
 }

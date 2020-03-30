@@ -46,7 +46,6 @@ public class WebController {
             }
         System.out.println(cookies[0].getValue()); //TODO: удалить проверочку id from cookie в sout
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
-        userRepoById.setReady(false);
         userRepoById.setPassword(null);
 //        ObjectMapper mapper = new ObjectMapper();
 //        String str = mapper.writeValueAsString(userRepoById);
