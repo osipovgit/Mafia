@@ -36,6 +36,11 @@ public class WebController {
         return "hello.html";
     }
 
+//    @RequestMapping("/playrooms/create")
+//    public String create(Model model) {
+//        return "";
+//    }
+
     @RequestMapping("/home")
     public String homePageView(Model model, HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();

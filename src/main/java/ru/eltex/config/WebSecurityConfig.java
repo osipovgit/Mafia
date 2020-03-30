@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.servlet.ServletRequest;
 import javax.sql.DataSource;
 
 
@@ -31,9 +32,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/", "/signup").permitAll()
+                .antMatchers("/", "/signup", "/playrooms", "/playrooms/create").permitAll()
 //                    .antMatchers("/authorization", "/signup").anonymous()
-//                    .anyRequest().authenticated()
+                .anyRequest().permitAll()
+                .mvcMatchers("/playrooms").permitAll()
+                .requestMatchers(ServletRequest::isAsyncSupported, ServletRequest::isSecure, ServletRequest::isAsyncStarted).permitAll()
                 .and()
                 .formLogin()
                 .loginPage("/authorization")

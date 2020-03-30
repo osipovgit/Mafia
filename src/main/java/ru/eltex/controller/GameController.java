@@ -1,7 +1,9 @@
 package ru.eltex.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +12,7 @@ import ru.eltex.entity.User;
 import ru.eltex.repos.RoomRepo;
 import ru.eltex.repos.UserRepo;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,8 +43,10 @@ public class GameController {
 //     * @return Объект пользователя
 //     * @see User#User()
 //     */
-    @PostMapping("/create")
-    public String createRoom(HttpServletRequest request, Model model) {
+    @GetMapping("/create")
+    public String createRoom(HttpServletRequest request, Model model, ServletRequest servletRequest) {
+        servletRequest.isAsyncStarted();
+        System.out.println("миру пиздец, все очень плохо");
         GameRooms gameRooms = new GameRooms();
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies)
@@ -54,7 +59,7 @@ public class GameController {
         gameRooms.setHostId(Long.parseLong(cookies[0].getValue()));
         gameRooms.setNumber(++roomNumber);
         roomRepo.save(gameRooms);
-        return "redirect:/playrooms/" + gameRooms.getNumber();
+        return "redirect:/playrooms/" + gameRooms.getNumber() + "";
     }
 
     //    @DeleteMapping
