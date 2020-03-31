@@ -1,20 +1,18 @@
 package ru.eltex.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.eltex.entity.GameRooms;
 import ru.eltex.entity.User;
 import ru.eltex.repos.RoomRepo;
 import ru.eltex.repos.UserRepo;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * Класс-контроллер
@@ -76,9 +74,9 @@ public class GameController {
                 break;
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
-        GameRooms gameRooms = roomRepo.findByNumber(roomNumber);
+        GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
         if (userRepoById.getId().equals(gameRooms.getHostId())) {       //TODO: Think about condition
-            roomRepo.deleteAllByNumber(roomNumber);
+            roomRepo.Delete(roomNumber);
         }
         return "/playrooms";
     }
@@ -89,19 +87,19 @@ public class GameController {
         return "";
     }
 
-    @GetMapping("/{roomNumber}/update_view_players")
-    public String playersInRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
-        List<GameRooms> rooms = roomRepo.findAllByNumber(roomNumber);
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonStr = null;
-        try {
-            jsonStr = mapper.writeValueAsString(rooms);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        System.out.println(jsonStr);
-        return jsonStr;
-    }
+//    @GetMapping("/{roomNumber}/update_view_players")
+//    public String playersInRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+//        List<GameRooms> rooms = roomRepo.findAllByNumber(roomNumber);
+//        ObjectMapper mapper = new ObjectMapper();
+//        String jsonStr = null;
+//        try {
+//            jsonStr = mapper.writeValueAsString(rooms);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(jsonStr);
+//        return jsonStr;
+//    }
 
     @GetMapping("/{roomNumber}/game")
     public String gameMode(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
