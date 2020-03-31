@@ -22,6 +22,14 @@ public class GameRooms {
      */
     private Long number;
     /**
+     * Поле list пользователей, находящихся в комнате №number
+     */
+    private Long userId;
+    /**
+     * Поле хост БД
+     */
+    private Long hostId;
+    /**
      * Поле роль
      */
     private String role;
@@ -44,14 +52,16 @@ public class GameRooms {
      */
     private Boolean girlChoice;
     /**
-     * Поле list пользователей, находящихся в комнате №number
+     * Поле начала времен
      */
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private User users;
+    private Long timer;
     /**
-     * Поле хост БД
-     * Так и не смог пройти фейсконтроль в БД
+     * Поле фазы игры
      */
-    private Long hostId;
+    private Integer phase = 1;
+    /**
+     * Поле начала времен
+     */
+    private Boolean stageOne;
 
 }

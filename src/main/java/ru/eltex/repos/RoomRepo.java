@@ -7,25 +7,30 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ru.eltex.entity.GameRooms;
 
-public interface RoomRepo extends JpaRepository<GameRooms, Long> {
-    GameRooms findByNumber(Long number);
+import java.util.List;
 
+public interface RoomRepo extends JpaRepository<GameRooms, Long> {
     GameRooms findTopByNumber(Long number);
 
-    GameRooms findAllByNumber(Long number);
+    List<GameRooms> findAllByNumber(Long number);
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "delete from rooms where number=:room_number")
-    void Delete(@Param("room_number") Long room_number);
+    void deleteAllByNumber(@Param("number") Long number);
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "delete from rooms where number=:room_number")
-    void showAllRooms(@Param("room_number") Long room_number);
+    @Query(nativeQuery = true, value = "update rooms set timer = :timer where number =:number")
+    int updateDate(@Param("number") Long number, @Param("timer") Long timer);
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "delete from rooms where number=:room_number")
-    void dff(@Param("room_number") Long room_number);
+    @Query(nativeQuery = true, value = "update rooms set phase = :phase where number =:number")
+    int updatePhase(@Param("number") Long number, @Param("phase") Integer phase);
+
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "update rooms set stageOne = :stageOne where number =:number")
+    int updateStage(@Param("number") Long number, @Param("stageOne") Boolean stageOne);
+
 }

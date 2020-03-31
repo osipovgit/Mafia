@@ -55,14 +55,6 @@ public class WebController {
         return "home.html";
     }
 
-    //    TODO: Фикс возможность зайти под любого пользователя (мб куки), как сохранить где-то под кого зашли? потом еще и комнаты надо сверять
-    @RequestMapping("/playrooms")
-    public String playRoomsView(Model model, User user) {
-        User repoByUsername = userRepo.findByUsernameOrId(user.getUsername(), null);
-        System.out.println(user);
-        return "playrooms.html";
-    }
-
     @RequestMapping("/playrooms/{roomNumber}")
     public String roomId(Model model, @PathVariable(value = "roomNumber") String roomNumber) {
         return "letsPlay.html";
@@ -73,12 +65,5 @@ public class WebController {
 
         return roomRepo.findAll();
     }
-
-//    @RequestMapping("/hello")
-//    public String hello(Model model) {
-//        model.addAttribute("name",
-//                new User(1, "Boris", 900));
-//        return "hello";
-//    }
 
 }

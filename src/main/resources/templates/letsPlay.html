@@ -11,26 +11,47 @@
             });
         }
 
+        function exitRoom() {
+            $.get(location.href + '/exit').then(function (data) {
+                document.location = data
+            });
+        }
+
+        function game() {
+            $.get(location.href + '/game').then(function (data) {
+                $("#info").html(data);
+            });
+        }
+
+        function startCheck() {
+            $.get(location.href + '/start').then(function (data) {
+                setInterval(game, 1000);
+                console.log(data)
+            });
+        }
+
         function viewUsers() {
             $.get(location.href + '/update_view_players').then(function (data) {
-                // setInterval(viewUsers, 1000);
                 $("#usersList").html(data);
                 console.log(data);
             });
         }
 
         function viewUsersPerSec() {
-            $(document).ready(function () {
-                // $("#viewUsers").html("<h1>TMP</h1>");
-                alert(123);
-                setInterval(viewUsers, 1000);
-            })
+            setInterval(viewUsers, 500);
         }
+
+        $(document).ready(function () {
+            viewUsersPerSec();
+        })
     </script>
 </head>
 <body>
 <h1>Зетс руум фор гаме</h1>
 <button type="submit" onclick="deleteRoom()">Удалить комнату</button>
-<div id="usersList" onload="viewUsersPerSec()"></div>
+<button type="submit" onclick="startCheck()">HEУдалить комнату</button>
+<br>
+<div id="usersList"></div>
+<div id="info"></div>
 </body>
 </html>

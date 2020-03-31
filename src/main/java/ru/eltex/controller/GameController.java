@@ -1,5 +1,7 @@
 package ru.eltex.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import ru.eltex.repos.UserRepo;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Класс-контроллер
@@ -51,9 +55,13 @@ public class GameController {
                 break;
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
-        gameRooms.setUsers(userRepoById);
+        gameRooms.setUserId(userRepoById.getId());
         gameRooms.setHostId(Long.parseLong(cookies[0].getValue()));
         gameRooms.setNumber(++roomNumber);
+        Date date = new Date();
+        gameRooms.setTimer(date.getTime());
+        gameRooms.setStageOne(true);
+        gameRooms.setPhase(1);
         roomRepo.save(gameRooms);
         System.out.println("Создана комната: " + gameRooms.getNumber());
         return "/playrooms/" + gameRooms.getNumber() + "";
@@ -75,39 +83,78 @@ public class GameController {
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
-        if (userRepoById.getId().equals(gameRooms.getHostId())) {       //TODO: Think about condition
-            roomRepo.Delete(roomNumber);
-        }
-        return "/playrooms";
+        if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole() == null) {       //TODO: Think about condition
+            roomRepo.deleteAllByNumber(roomNumber);
+            return "/playrooms";
+        } else return "/playrooms/" + roomNumber;
     }
 
     @GetMapping("/{roomNumber}/start")
     public String startGame(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
+        Date date = new Date();
+        roomRepo.updateDate(roomNumber, date.getTime());
+        return "" + date.getTime();
+    }
+
+    @GetMapping("/{roomNumber}/chat")
+    public String updateChat(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
 
         return "";
     }
 
-//    @GetMapping("/{roomNumber}/update_view_players")
-//    public String playersInRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
-//        List<GameRooms> rooms = roomRepo.findAllByNumber(roomNumber);
-//        ObjectMapper mapper = new ObjectMapper();
-//        String jsonStr = null;
-//        try {
-//            jsonStr = mapper.writeValueAsString(rooms);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
+    @GetMapping("/{roomNumber}/update_view_players")
+    public String playersInRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        List<GameRooms> rooms = roomRepo.findAllByNumber(roomNumber);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonStr = null;
+        try {
+            jsonStr = mapper.writeValueAsString(rooms);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 //        System.out.println(jsonStr);
-//        return jsonStr;
-//    }
+        return jsonStr;
+    }
 
     @GetMapping("/{roomNumber}/game")
     public String gameMode(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
-
-        return "";
+        GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
+        Date dateNow = new Date();
+        String string = "";
+        switch (gameRooms.getPhase()) {
+            case 1:
+                if (dateNow.getTime() - gameRooms.getTimer() >= 120000) {
+                    roomRepo.updatePhase(roomNumber, 2);
+                    Date date = new Date();
+                    roomRepo.updateDate(roomNumber, date.getTime());
+                }
+                string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
+                break;
+            case 2:
+                if (dateNow.getTime() - gameRooms.getTimer() >= 60000) {
+                    if (gameRooms.getStageOne().equals(true)) {
+                        string = string;
+                    } else {
+                        roomRepo.updateStage(roomNumber, false);
+                    }
+                    roomRepo.updatePhase(roomNumber, 3);
+                    Date date = new Date();
+                    roomRepo.updateDate(roomNumber, date.getTime());
+                }
+                string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
+                break;
+            case 3:
+                if (dateNow.getTime() - gameRooms.getTimer() >= 120000) {
+                    roomRepo.updatePhase(roomNumber, 1);
+                    Date date = new Date();
+                    roomRepo.updateDate(roomNumber, date.getTime());
+                }
+                string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
+                break;
+        }
+        return string;
     }
-
-
 }
 /*
 {
@@ -119,3 +166,29 @@ public class GameController {
                 ]
 }
  */
+/*
+        Bool firstVoiceInGameToBlockBecauseWeNeedToSleep = true
+
+        День:
+            timer [00:02:00]
+            chat only
+
+        if (!f) {
+            голос:
+            timer [00:01:00]
+            chat + voice
+            kill + view role
+        } else f = !f
+
+        ночь:
+            timer [00:02:00]
+            mafiaChat + mafiaMove + docMove + mentMove + oneMoreEntity
+            results [mafia kill moreChoice people or random if equal
+                     don't kill if doc_choice
+                     ladyOfNotHeartVremennyMove: can't choice in voice
+                     ]
+
+
+
+
+*/
