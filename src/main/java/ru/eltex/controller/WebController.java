@@ -56,14 +56,23 @@ public class WebController {
     }
 
     @RequestMapping("/playrooms/{roomNumber}")
-    public String roomId(Model model, @PathVariable(value = "roomNumber") String roomNumber) {
-        return "letsPlay.html";
+    public String roomId(Model model, @PathVariable(value = "roomNumber") Long roomNumber, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        }
+        if (roomRepo.findByNumberAndUserId(roomNumber, Long.parseLong(cookies[0].getValue())) != null)
+            return "letsPlay.html";
+        else return "redirect:/playrooms";
     }
 
     @GetMapping("/playrooms")
-    public List<GameRooms> playroom(Model model) {
+    public String playroom(Model model) {
 
-        return roomRepo.findAll();
+        return "playrooms.html";
     }
 
 }

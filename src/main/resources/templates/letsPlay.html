@@ -11,6 +11,12 @@
             });
         }
 
+        function leaveRoom() {
+            $.get(location.href + '/leave').then(function (data) {
+                document.location = data
+            });
+        }
+
         function exitRoom() {
             $.get(location.href + '/exit').then(function (data) {
                 document.location = data
@@ -31,9 +37,9 @@
         }
 
         function viewUsers() {
-            $.get(location.href + '/update_view_players').then(function (data) {
-                $("#usersList").html(data);
-                console.log(data);
+            $.get(location.href + '/update_view_players').then(function (jsonGameRooms) {
+                $("#usersList").html(jsonGameRooms);
+                console.log(jsonGameRooms);
             });
         }
 
@@ -48,9 +54,10 @@
 </head>
 <body>
 <h1>Зетс руум фор гаме</h1>
+<button type="submit" onclick="leaveRoom()">Покинуть комнату</button>
 <button type="submit" onclick="deleteRoom()">Удалить комнату</button>
-<button type="submit" onclick="startCheck()">HEУдалить комнату</button>
 <br>
+<button type="submit" onclick="startCheck()">HEУдалить комнату</button>
 <div id="usersList"></div>
 <div id="info"></div>
 </body>

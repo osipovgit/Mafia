@@ -12,6 +12,8 @@ import java.util.List;
 public interface RoomRepo extends JpaRepository<GameRooms, Long> {
     GameRooms findTopByNumber(Long number);
 
+    GameRooms findByNumberAndUserId(Long number, Long userId);
+
     List<GameRooms> findAllByNumber(Long number);
 
     @Modifying
@@ -20,17 +22,21 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     @Modifying
     @Transactional
+    void deleteByNumberAndUserId(@Param("number") Long number, @Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
     @Query(nativeQuery = true, value = "update rooms set timer = :timer where number =:number")
-    int updateDate(@Param("number") Long number, @Param("timer") Long timer);
+    void updateDate(@Param("number") Long number, @Param("timer") Long timer);
 
     @Modifying
     @Transactional
     @Query(nativeQuery = true, value = "update rooms set phase = :phase where number =:number")
-    int updatePhase(@Param("number") Long number, @Param("phase") Integer phase);
+    void updatePhase(@Param("number") Long number, @Param("phase") Integer phase);
 
     @Modifying
     @Transactional
     @Query(nativeQuery = true, value = "update rooms set stageOne = :stageOne where number =:number")
-    int updateStage(@Param("number") Long number, @Param("stageOne") Boolean stageOne);
+    void updateStage(@Param("number") Long number, @Param("stageOne") Boolean stageOne);
 
 }

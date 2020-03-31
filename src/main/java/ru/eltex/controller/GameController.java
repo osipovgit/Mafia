@@ -64,7 +64,7 @@ public class GameController {
         gameRooms.setPhase(1);
         roomRepo.save(gameRooms);
         System.out.println("Создана комната: " + gameRooms.getNumber());
-        return "/playrooms/" + gameRooms.getNumber() + "";
+        return "/playrooms/" + gameRooms.getNumber();
     }
 
     @GetMapping("/update")
@@ -85,6 +85,23 @@ public class GameController {
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
         if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole() == null) {       //TODO: Think about condition
             roomRepo.deleteAllByNumber(roomNumber);
+            return "/playrooms";
+        } else return "/playrooms/" + roomNumber;
+    }
+
+    @GetMapping("/{roomNumber}/leave")
+    public String leaveRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
+        GameRooms gameRooms = roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId());
+        if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole() == null) {       //TODO: Think about condition
+            roomRepo.deleteByNumberAndUserId(roomNumber, userRepoById.getId());
+            System.out.println("Пользователь: " + userRepoById.getUsername() + " покинул комнату номер: " + roomNumber);
             return "/playrooms";
         } else return "/playrooms/" + roomNumber;
     }
