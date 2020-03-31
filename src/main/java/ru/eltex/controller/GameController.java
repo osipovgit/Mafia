@@ -1,5 +1,7 @@
 package ru.eltex.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import ru.eltex.repos.UserRepo;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Класс-контроллер
@@ -58,6 +61,11 @@ public class GameController {
         return "/playrooms/" + gameRooms.getNumber() + "";
     }
 
+    @GetMapping("/update")
+    public String viewAllRooms(HttpServletRequest request, Model model) {
+        return "";
+    }
+
     @GetMapping("/{roomNumber}/delete")
     public String deleteRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         System.out.println("Удалена комната номер: " + roomNumber);
@@ -70,16 +78,46 @@ public class GameController {
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findByNumber(roomNumber);
         if (userRepoById.getId().equals(gameRooms.getHostId())) {       //TODO: Think about condition
-            roomRepo.Delete(roomNumber);
+            roomRepo.deleteAllByNumber(roomNumber);
         }
         return "/playrooms";
     }
 
-//    @RequestMapping("/get_user/{id}")
-//    public User getUser1(@PathVariable("id") Integer id) {
-//        System.out.println(id);
-//        return new User(1, "Boris", "", 939399393);
-//    }
+    @GetMapping("/{roomNumber}/start")
+    public String startGame(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+
+        return "";
+    }
+
+    @GetMapping("/{roomNumber}/update_view_players")
+    public String playersInRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        List<GameRooms> rooms = roomRepo.findAllByNumber(roomNumber);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonStr = null;
+        try {
+            jsonStr = mapper.writeValueAsString(rooms);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        System.out.println(jsonStr);
+        return jsonStr;
+    }
+
+    @GetMapping("/{roomNumber}/game")
+    public String gameMode(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+
+        return "";
+    }
 
 
 }
+/*
+{
+    "messages": [{"message" : .getUsername() + ": " + "привет дарагие патпищики"},
+                 {"message" : "Lanturn: @$%!* иди"},
+                 {"message" : "Boris: у вас осталось шесть дней"},
+                 {"message" : "Lanturn: *!%$@ идем мы походу (ред.)"},
+                 {"message" : "*Биба и Боба покидают чат*"}
+                ]
+}
+ */
