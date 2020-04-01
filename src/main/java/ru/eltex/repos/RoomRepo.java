@@ -39,4 +39,23 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
     @Query(nativeQuery = true, value = "update rooms set stageOne = :stageOne where number =:number")
     void updateStage(@Param("number") Long number, @Param("stageOne") Boolean stageOne);
 
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "update rooms set vote = :vote where number =:number and userId =:userId")
+    void setVoiceOn(@Param("number") Long number, @Param("vote") Integer vote, @Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "update rooms set doneMove = :doneMove where number =:number and userId =:userId")
+    void setDoneMoveReverse(@Param("number") Long number, @Param("doneMove") Boolean doneMove, @Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "update rooms set vote = :vote where number =:number")
+    void setVoiceZero(@Param("number") Long number, @Param("vote") Integer vote);
+
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "update rooms set doneMove = :doneMove where number =:number")
+    void setDoneMoveFalse(@Param("number") Long number, @Param("doneMove") Boolean doneMove);
 }

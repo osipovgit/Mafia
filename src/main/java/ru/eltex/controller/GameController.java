@@ -15,6 +15,7 @@ import ru.eltex.repos.UserRepo;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class GameController {
         gameRooms.setTimer(date.getTime());
         gameRooms.setStageOne(true);
         gameRooms.setPhase(1);
+        gameRooms.setDoneMove(false);
         roomRepo.save(gameRooms);
         System.out.println("Создана комната: " + gameRooms.getNumber());
         return "/playrooms/" + gameRooms.getNumber();
@@ -91,10 +93,11 @@ public class GameController {
             gameRooms.setTimer(date.getTime());
             gameRooms.setStageOne(true);
             gameRooms.setPhase(1);
+            gameRooms.setDoneMove(false);
             roomRepo.save(gameRooms);
             System.out.println("Пользователь: " + userRepoById.getUsername() + " присоединяется к комнате: " + roomNumber);
             return "/playrooms" + roomNumber;
-        } else return "/playrooms/";
+        } else return "/playrooms";
     }
 
     @GetMapping("/{roomNumber}/delete")
@@ -139,8 +142,8 @@ public class GameController {
         if (gameRoomsList.size() <= 1) { // TODO: change to < 5
             roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 0L;
-        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 60000 & gameRoomsList.size() < 10) {
-            return 1L; //TODO: return timer to begin
+        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 60000 & gameRoomsList.size() < 10 & gameRoomTop.getRole() == null) {
+            return 1L; //TODO: return timer before begin
         } else {
             roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 2L;
@@ -156,10 +159,16 @@ public class GameController {
     @GetMapping("/{roomNumber}/update_view_players")
     public String playersInRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         List<GameRooms> rooms = roomRepo.findAllByNumber(roomNumber);
+        List<User> users = new ArrayList<>();
+        for (GameRooms room : rooms) {
+            User user = userRepo.findByUsernameOrId(null, room.getUserId());
+            user.setPassword(null);
+            users.add(user);
+        }
         ObjectMapper mapper = new ObjectMapper();
         String jsonStr = null;
         try {
-            jsonStr = mapper.writeValueAsString(rooms);
+            jsonStr = mapper.writeValueAsString(users);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -167,9 +176,40 @@ public class GameController {
         return jsonStr;
     }
 
+    @GetMapping("/{roomNumber}/click_to_user/{yourChoice}")
+    public String iLikeToMoveIt(@PathVariable("roomNumber") Long roomNumber, @PathVariable("yourChoice") String yourChoice, HttpServletRequest request, Model model) {
+        GameRooms gameRoomsTop = roomRepo.findTopByNumber(roomNumber);
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
+        GameRooms gameRooms = roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId());
+        if (!userRepoById.getUsername().equals(yourChoice)
+                && gameRooms != null && !gameRooms.getDoneMove()) {
+            switch (gameRoomsTop.getPhase()) {
+                case 1:
+                    return " [" + yourChoice + "] ";
+                case 2:
+                    roomRepo.setVoiceOn(roomNumber,
+                            roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getVote() + 1,
+                            userRepo.findByUsernameOrId(yourChoice, null).getId());
+                    // TODO: в чат "проголосовал против" STRING
+                case 3:
+                    break;
+            }
+            roomRepo.setDoneMoveReverse(roomNumber, true, userRepoById.getId());
+        }
+        return "";
+    }
+
     @GetMapping("/{roomNumber}/game")
     public String gameMode(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
+//        if (gameRooms.getRole() == null & gameRooms.getStageOne().equals(true)) {
+//        } TODO: set role for all
         Date dateNow = new Date();
         String string = "";
         switch (gameRooms.getPhase()) {
@@ -178,6 +218,8 @@ public class GameController {
                     roomRepo.updatePhase(roomNumber, 2);
                     Date date = new Date();
                     roomRepo.updateDate(roomNumber, date.getTime());
+                    roomRepo.setDoneMoveFalse(roomNumber, false);
+                    roomRepo.setVoiceZero(roomNumber, 0);
                 }
                 string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
                 break;
@@ -191,6 +233,8 @@ public class GameController {
                     roomRepo.updatePhase(roomNumber, 3);
                     Date date = new Date();
                     roomRepo.updateDate(roomNumber, date.getTime());
+                    roomRepo.setDoneMoveFalse(roomNumber, false);
+                    roomRepo.setVoiceZero(roomNumber, 0);
                 }
                 string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
                 break;
@@ -199,6 +243,8 @@ public class GameController {
                     roomRepo.updatePhase(roomNumber, 1);
                     Date date = new Date();
                     roomRepo.updateDate(roomNumber, date.getTime());
+                    roomRepo.setDoneMoveFalse(roomNumber, false);
+                    roomRepo.setVoiceZero(roomNumber, 0);
                 }
                 string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
                 break;
@@ -221,12 +267,12 @@ public class GameController {
 
         День:
 timer [00:02:00]
-            chat only
+            chat only [username]
 
         if (!f) {
             голос:
 timer [00:01:00]
-            chat + voice
+            voice + chat
             kill + view role
         } else f = !f
 
@@ -239,5 +285,16 @@ timer [00:02:00]
                     ]
 
 
-
+, function () {
+                for (let i = 0; i < 24; i++) {
+                    if (key === "userId") {
+                        viewewew.className = 'button';
+                        viewewew.innerHTML = value;
+                        // var text = document.createTextNode("SOMETHING");
+                        $("#usersList").html(viewewew);
+                        // viewewew.appendChild(text);
+                        // viewewew.innerHTML = "<br>";
+                    }
+                }
+            }
 */

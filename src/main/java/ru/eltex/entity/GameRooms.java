@@ -63,5 +63,8 @@ public class GameRooms {
      * Поле начала времен
      */
     private Boolean stageOne;
-
+    /**
+     * Поле совершенного действия (голос, выбор)
+     */
+    private Boolean doneMove;
 }

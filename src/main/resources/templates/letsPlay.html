@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <head>
     <meta charset="UTF-8">
     <title>Play me</title>
@@ -17,9 +19,9 @@
             });
         }
 
-        function exitRoom() {
-            $.get(location.href + '/exit').then(function (data) {
-                document.location = data
+        function clickHim(data) {
+            $.get(location.href + '/click_to_user/' + data.id).then(function () {
+                console.log(data.id)
             });
         }
 
@@ -30,7 +32,7 @@
         }
 
         function letsPlay() {
-            setInterval(game, 500);
+            setInterval(game, 1000);
         }
 
         function startCheck() {
@@ -47,13 +49,29 @@
 
         function viewUsers() {
             $.get(location.href + '/update_view_players').then(function (jsonGameRooms) {
-                $("#usersList").html(jsonGameRooms);
-                console.log(jsonGameRooms);
+                $('#usersList').empty();
+                var element = document.getElementById('usersList'); // assuming ul exists
+                var fragment = document.createDocumentFragment();
+                var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
+                    if (key === "username") {
+                        var buttonElement = document.createElement('button');
+                        buttonElement.type = "submit";
+                        buttonElement.className = "btn";
+                        buttonElement.id = value;
+                        buttonElement.onclick = function () {
+                            clickHim(this);
+                        };
+                        buttonElement.textContent = value;
+                        fragment.appendChild(buttonElement);
+                    }
+                });
+                element.appendChild(fragment);
             });
+
         }
 
         function viewUsersPerSec() {
-            setInterval(viewUsers, 500);
+            setInterval(viewUsers, 1000);
         }
 
         $(document).ready(function () {
@@ -67,8 +85,10 @@
 <button type="submit" onclick="leaveRoom()">Покинуть комнату</button>
 <button type="submit" onclick="deleteRoom()">Удалить комнату</button>
 <br>
-<button type="submit" onclick="startCheck()">HEУдалить комнату</button>
+<br>
+<br>
 <div id="usersList"></div>
+<br>
 <div id="info"></div>
 </body>
 </html>
