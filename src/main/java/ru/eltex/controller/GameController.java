@@ -72,6 +72,31 @@ public class GameController {
         return "";
     }
 
+    @GetMapping("/{roomNumber}/joinPlayer")
+    public String joinPlayer(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
+        List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
+        if (roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()) == null && gameRoomsList.size() < 10) {       //TODO: Think about condition
+            GameRooms gameRooms = new GameRooms();
+            gameRooms.setUserId(userRepoById.getId());
+            gameRooms.setHostId(roomRepo.findTopByNumber(roomNumber).getHostId());
+            gameRooms.setNumber(roomNumber);
+            Date date = new Date();
+            gameRooms.setTimer(date.getTime());
+            gameRooms.setStageOne(true);
+            gameRooms.setPhase(1);
+            roomRepo.save(gameRooms);
+            System.out.println("Пользователь: " + userRepoById.getUsername() + " присоединяется к комнате: " + roomNumber);
+            return "/playrooms" + roomNumber;
+        } else return "/playrooms/";
+    }
+
     @GetMapping("/{roomNumber}/delete")
     public String deleteRoom(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         System.out.println("Удалена комната номер: " + roomNumber);
@@ -107,11 +132,19 @@ public class GameController {
     }
 
     @GetMapping("/{roomNumber}/start")
-    public String startGame(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
-        GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
-        Date date = new Date();
-        roomRepo.updateDate(roomNumber, date.getTime());
-        return "" + date.getTime();
+    public Long startGame(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        GameRooms gameRoomTop = roomRepo.findTopByNumber(roomNumber);
+        List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
+        Date dateNow = new Date();
+        if (gameRoomsList.size() <= 1) { // TODO: change to < 5
+            roomRepo.updateDate(roomNumber, dateNow.getTime());
+            return 0L;
+        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 60000 & gameRoomsList.size() < 10) {
+            return 1L; //TODO: return timer to begin
+        } else {
+            roomRepo.updateDate(roomNumber, dateNow.getTime());
+            return 2L;
+        }
     }
 
     @GetMapping("/{roomNumber}/chat")
@@ -187,24 +220,23 @@ public class GameController {
         Bool firstVoiceInGameToBlockBecauseWeNeedToSleep = true
 
         День:
-            timer [00:02:00]
+timer [00:02:00]
             chat only
 
         if (!f) {
             голос:
-            timer [00:01:00]
+timer [00:01:00]
             chat + voice
             kill + view role
         } else f = !f
 
         ночь:
-            timer [00:02:00]
+timer [00:02:00]
             mafiaChat + mafiaMove + docMove + mentMove + oneMoreEntity
             results [mafia kill moreChoice people or random if equal
                      don't kill if doc_choice
                      ladyOfNotHeartVremennyMove: can't choice in voice
-                     ]
-
+                    ]
 
 
 

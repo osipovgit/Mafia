@@ -29,11 +29,20 @@
             });
         }
 
+        function letsPlay() {
+            setInterval(game, 500);
+        }
+
         function startCheck() {
             $.get(location.href + '/start').then(function (data) {
-                setInterval(game, 1000);
-                console.log(data)
+                if (data === 2)
+                    letsPlay();
+                else startAgain();
             });
+        }
+
+        function startAgain() {
+            startCheck();
         }
 
         function viewUsers() {
@@ -49,6 +58,7 @@
 
         $(document).ready(function () {
             viewUsersPerSec();
+            startCheck();
         })
     </script>
 </head>
