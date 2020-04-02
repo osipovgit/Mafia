@@ -37,6 +37,10 @@
 
         function startCheck() {
             $.get(location.href + '/start').then(function (data) {
+                if (data === 3) {
+                    document.location = "/playrooms";
+                    alert("Владелец комнаты удалил ее :(");
+                }
                 if (data === 2)
                     letsPlay();
                 else startAgain();
@@ -94,7 +98,7 @@
         function viewUsers() {
             $.get(location.href + '/update_view_players').then(function (jsonGameRooms) {
                 $('#usersList').empty();
-                var element = document.getElementById('usersList'); // assuming ul exists
+                var element = document.getElementById('usersList');
                 var fragment = document.createDocumentFragment();
                 var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
                     if (key === "username") {

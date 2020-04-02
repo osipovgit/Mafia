@@ -10,16 +10,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.eltex.entity.GameRooms;
 import ru.eltex.entity.Messages;
+import ru.eltex.entity.RoomsInfo;
 import ru.eltex.entity.User;
 import ru.eltex.repos.MessagesRepo;
 import ru.eltex.repos.RoomRepo;
+import ru.eltex.repos.RoomsInfoRepo;
 import ru.eltex.repos.UserRepo;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Класс-контроллер
@@ -38,6 +39,9 @@ public class GameController {
 
     @Autowired
     private MessagesRepo messagesRepo;
+
+    @Autowired
+    private RoomsInfoRepo infoRepo;
 
     private final RoomRepo roomRepo;
 
@@ -76,7 +80,45 @@ public class GameController {
 
     @GetMapping("/update")
     public String viewAllRooms(HttpServletRequest request, Model model) {
-        return "";
+        if (roomRepo.findAll() == null)
+            return "";
+        List<GameRooms> gameRooms = roomRepo.findAll().stream().sorted(Comparator.comparing(GameRooms::getNumber)).collect(Collectors.toList());
+        int count = 0;
+        String hostName = "";
+        long roomNumNow = -1;
+        infoRepo.deleteAll();
+        for (GameRooms gameRoom : gameRooms) {
+            if (roomNumNow == -1) {
+                roomNumNow = gameRoom.getNumber();
+            }
+            if (gameRoom.getNumber() == roomNumNow) {
+                ++count;
+                hostName = userRepo.findByUsernameOrId(null, gameRoom.getHostId()).getUsername();
+            } else {
+                RoomsInfo roomsInfo = new RoomsInfo();
+                roomsInfo.setNumber(roomNumNow);
+                roomsInfo.setInfo(roomNumNow + "       |        Host: " + hostName + "       |       " + count + "/10");
+                infoRepo.save(roomsInfo);
+                count = 1;
+                roomNumNow = gameRoom.getNumber();
+            }
+        }
+        if (infoRepo.findByNumber(roomNumNow) == null & roomNumNow != -1) {
+            RoomsInfo roomsInfo = new RoomsInfo();
+            roomsInfo.setNumber(roomNumNow);
+            roomsInfo.setInfo(roomNumNow + "       |        Host: " + hostName + "       |       " + count + "/10");
+            infoRepo.save(roomsInfo);
+        }
+        List<RoomsInfo> roomsInfos = infoRepo.findAll();
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonStr = null;
+        try {
+            jsonStr = mapper.writeValueAsString(roomsInfos);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+//        System.out.println(jsonStr);
+        return jsonStr;
     }
 
     @GetMapping("/{roomNumber}/joinPlayer")
@@ -89,6 +131,8 @@ public class GameController {
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
+        if (roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()) != null)
+            return "/playrooms/" + roomNumber;
         if (roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()) == null && gameRoomsList.size() < 10) {       //TODO: Think about condition
             GameRooms gameRooms = new GameRooms();
             gameRooms.setUserId(userRepoById.getId());
@@ -101,7 +145,7 @@ public class GameController {
             gameRooms.setDone_move(false);
             roomRepo.save(gameRooms);
             System.out.println("Пользователь: " + userRepoById.getUsername() + " присоединяется к комнате: " + roomNumber);
-            return "/playrooms" + roomNumber;
+            return "/playrooms/" + roomNumber;
         } else return "/playrooms";
     }
 
@@ -116,7 +160,7 @@ public class GameController {
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
-        if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole() == null) {       //TODO: Think about condition
+        if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole() == null) {
             roomRepo.deleteAllByNumber(roomNumber);
             return "/playrooms";
         } else return "/playrooms/" + roomNumber;
@@ -132,7 +176,7 @@ public class GameController {
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId());
-        if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole() == null) {       //TODO: Think about condition
+        if (userRepoById.getId().equals(gameRooms.getUserId()) && gameRooms.getRole() == null) {
             roomRepo.deleteByNumberAndUserId(roomNumber, userRepoById.getId());
             System.out.println("Пользователь: " + userRepoById.getUsername() + " покинул комнату номер: " + roomNumber);
             return "/playrooms";
@@ -144,6 +188,8 @@ public class GameController {
         GameRooms gameRoomTop = roomRepo.findTopByNumber(roomNumber);
         List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
         Date dateNow = new Date();
+        if (gameRoomTop == null)
+            return 3L;
         if (gameRoomsList.size() <= 1) { // TODO: change to < 5
             roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 0L;
@@ -168,6 +214,7 @@ public class GameController {
 //        System.out.println(jsonStr);
         return jsonStr;
     }
+    // TODO: добавить отображение на фазу 3 для роли "мафия"
 
     @GetMapping("/{roomNumber}/chat/{newMessage}")
     public String updateChat(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model, @PathVariable String newMessage) {

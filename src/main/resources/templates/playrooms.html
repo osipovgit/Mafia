@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <head>
     <meta charset="UTF-8">
     <title>Mafia</title>
@@ -12,26 +14,59 @@
             });
         }
 
+        function clickRoom(data) {
+            $.get(location.href + "/" + data.id + '/joinPlayer').then(function (datata) {
+                document.location = datata;
+            });
+        }
+
         function viewRooms() {
             $.get('/playrooms/update').then(function (roomsView) {
-                $("#roomsList").html(roomsView);
-                console.log(roomsView);
+                if (roomsView !== "") {
+                    $('#roomsList').empty();
+                    var element = document.getElementById('roomsList');
+                    var fragment = document.createDocumentFragment();
+                    var setId;
+                    var objGameRoom = JSON.parse(roomsView, function (key, value) {
+                        if (key === "number")
+                            setId = value;
+                        if (key === "info") {
+                            var buttonElement = document.createElement('button');
+                            buttonElement.className = "btn";
+                            buttonElement.type = "submit";
+                            buttonElement.id = setId;
+                            buttonElement.onclick = function () {
+                                clickRoom(this);
+                            };
+                            buttonElement.textContent = value;
+                            fragment.appendChild(buttonElement);
+                            var brb = document.createElement('br');
+                            fragment.appendChild(brb);
+                            var brbr = document.createElement('br');
+                            fragment.appendChild(brbr);
+                        }
+                    });
+
+                    element.appendChild(fragment);
+                }
             });
         }
 
         function viewRoomsPerSec() {
-            setInterval(viewRooms, 500);
+            setInterval(viewRooms, 5000);
         }
 
         $(document).ready(function () {
+            viewRooms();
             viewRoomsPerSec();
         })
     </script>
 </head>
 <body>
 <h1>Playrooms</h1> <br>
-<a onclick="">Создать комнату</a> <br>
 <button type="submit" onclick="create()">Создать комнату</button>
+<br>
+<br>
 <div id="roomsList"></div>
 </body>
 </html>

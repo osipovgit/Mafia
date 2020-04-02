@@ -12,9 +12,16 @@ import java.util.List;
 public interface RoomRepo extends JpaRepository<GameRooms, Long> {
     GameRooms findTopByNumber(Long number);
 
+    List<GameRooms> findAllByNumber(Long number);
+
     GameRooms findByNumberAndUserId(Long number, Long userId);
 
-    List<GameRooms> findAllByNumber(Long number);
+    @Override
+    List<GameRooms> findAll();
+//    @Modifying
+//    @Transactional
+//    @Query(nativeQuery = true, value = "select number, count(userId) from rooms group by number")
+//    List<GameRooms> getNumberAndCount();
 
     @Modifying
     @Transactional
