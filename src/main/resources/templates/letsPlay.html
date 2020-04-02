@@ -47,6 +47,50 @@
             startCheck();
         }
 
+        function sendMessage() {
+            $.get(location.href + '/chat/' + document.getElementById("textMessage").value).then(function (jsonGameRooms) {
+                $('#chat').empty();
+                document.getElementById("textMessage").value = "";
+                var element = document.getElementById('chat');
+                var fragment = document.createDocumentFragment();
+                var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
+                    if (key === "message") {
+                        var messageElement = document.createElement('a');
+                        messageElement.textContent = value;
+                        fragment.appendChild(messageElement);
+                        var brb = document.createElement('br');
+                        fragment.appendChild(brb);
+                    }
+                });
+                element.appendChild(fragment);
+            });
+
+        }
+
+        function chatUpdate() {
+            $.get(location.href + '/chat').then(function (jsonGameRooms) {
+                $('#chat').empty();
+                var element = document.getElementById('chat');
+                var fragment = document.createDocumentFragment();
+                var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
+                    if (key === "message") {
+                        var messageElement = document.createElement('a');
+                        messageElement.textContent = value;
+                        fragment.appendChild(messageElement);
+                        var brb = document.createElement('br');
+                        fragment.appendChild(brb);
+                    }
+                });
+                element.appendChild(fragment);
+            });
+
+        }
+
+        function resChat() {
+            setInterval(chatUpdate, 1000);
+
+        }
+
         function viewUsers() {
             $.get(location.href + '/update_view_players').then(function (jsonGameRooms) {
                 $('#usersList').empty();
@@ -63,6 +107,8 @@
                         };
                         buttonElement.textContent = value;
                         fragment.appendChild(buttonElement);
+                        var brb = document.createElement('br');
+                        fragment.appendChild(brb);
                     }
                 });
                 element.appendChild(fragment);
@@ -77,6 +123,7 @@
         $(document).ready(function () {
             viewUsersPerSec();
             startCheck();
+            resChat();
         })
     </script>
 </head>
@@ -90,5 +137,12 @@
 <div id="usersList"></div>
 <br>
 <div id="info"></div>
+<br>
+<div class="border" id="chat" style="overflow: scroll; height: 45vh; width: 50vw"></div>
+<div>
+    <input type="text" class="form-control" placeholder="Опять ты чатишься?!" id="textMessage"
+           style="overflow: scroll; width: 50vw">
+    <button type="submit" onclick="sendMessage()">Отправить</button>
+</div>
 </body>
 </html>

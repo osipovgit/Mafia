@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.eltex.entity.GameRooms;
+import ru.eltex.entity.Messages;
 import ru.eltex.entity.User;
+import ru.eltex.repos.MessagesRepo;
 import ru.eltex.repos.RoomRepo;
 import ru.eltex.repos.UserRepo;
 
@@ -33,6 +35,9 @@ public class GameController {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private MessagesRepo messagesRepo;
 
     private final RoomRepo roomRepo;
 
@@ -63,7 +68,7 @@ public class GameController {
         gameRooms.setTimer(date.getTime());
         gameRooms.setStageOne(true);
         gameRooms.setPhase(1);
-        gameRooms.setDoneMove(false);
+        gameRooms.setDone_move(false);
         roomRepo.save(gameRooms);
         System.out.println("Создана комната: " + gameRooms.getNumber());
         return "/playrooms/" + gameRooms.getNumber();
@@ -93,7 +98,7 @@ public class GameController {
             gameRooms.setTimer(date.getTime());
             gameRooms.setStageOne(true);
             gameRooms.setPhase(1);
-            gameRooms.setDoneMove(false);
+            gameRooms.setDone_move(false);
             roomRepo.save(gameRooms);
             System.out.println("Пользователь: " + userRepoById.getUsername() + " присоединяется к комнате: " + roomNumber);
             return "/playrooms" + roomNumber;
@@ -151,9 +156,44 @@ public class GameController {
     }
 
     @GetMapping("/{roomNumber}/chat")
-    public String updateChat(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+    public String updateChatPerSec(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        List<Messages> messages = messagesRepo.findAllByRoomNumberOrderById(roomNumber);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonStr = null;
+        try {
+            jsonStr = mapper.writeValueAsString(messages);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+//        System.out.println(jsonStr);
+        return jsonStr;
+    }
 
-        return "";
+    @GetMapping("/{roomNumber}/chat/{newMessage}")
+    public String updateChat(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model, @PathVariable String newMessage) {
+        if (!newMessage.equals("")) {
+            Messages messages = new Messages();
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies)
+                if (cookie.getName().equals("userId")) {
+                    cookies[0] = cookie;
+                    break;
+                }
+            User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
+            messages.setRoomNumber(roomNumber);
+            messages.setMessage(userRepoById.getUsername() + ": " + newMessage);
+            messagesRepo.save(messages);
+        }
+        List<Messages> messages = messagesRepo.findAllByRoomNumberOrderById(roomNumber);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonStr = null;
+        try {
+            jsonStr = mapper.writeValueAsString(messages);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+//        System.out.println(jsonStr);
+        return jsonStr;
     }
 
     @GetMapping("/{roomNumber}/update_view_players")
@@ -188,14 +228,16 @@ public class GameController {
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId());
         if (!userRepoById.getUsername().equals(yourChoice)
-                && gameRooms != null && !gameRooms.getDoneMove()) {
+                && gameRooms != null && !gameRooms.getDone_move()) {
             switch (gameRoomsTop.getPhase()) {
                 case 1:
                     return " [" + yourChoice + "] ";
                 case 2:
-                    roomRepo.setVoiceOn(roomNumber,
-                            roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getVote() + 1,
-                            userRepo.findByUsernameOrId(yourChoice, null).getId());
+                    if (!roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getGirlChoice()) {
+                        roomRepo.setVoiceOn(roomNumber,
+                                roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getVote() + 1,
+                                userRepo.findByUsernameOrId(yourChoice, null).getId());
+                    }
                     // TODO: в чат "проголосовал против" STRING
                 case 3:
                     break;
@@ -235,6 +277,7 @@ public class GameController {
                     roomRepo.updateDate(roomNumber, date.getTime());
                     roomRepo.setDoneMoveFalse(roomNumber, false);
                     roomRepo.setVoiceZero(roomNumber, 0);
+                    messagesRepo.deleteAllByRoomNumber(roomNumber);
                 }
                 string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
                 break;
@@ -245,6 +288,7 @@ public class GameController {
                     roomRepo.updateDate(roomNumber, date.getTime());
                     roomRepo.setDoneMoveFalse(roomNumber, false);
                     roomRepo.setVoiceZero(roomNumber, 0);
+                    messagesRepo.deleteAllByRoomNumber(roomNumber);
                 }
                 string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
                 break;
@@ -254,13 +298,18 @@ public class GameController {
 }
 /*
 {
+    ["numberRoom": "roomNum"
     "messages": [{"message" : .getUsername() + ": " + "привет дарагие патпищики"},
                  {"message" : "Lanturn: @$%!* иди"},
                  {"message" : "Boris: у вас осталось шесть дней"},
                  {"message" : "Lanturn: *!%$@ идем мы походу (ред.)"},
                  {"message" : "*Биба и Боба покидают чат*"}
-                ]
+                ]]
 }
+i: hiBorya:byeMax:sent code
+-------------------------     ------
+|  hi                    |   | sent |
+-------------------------     ------
  */
 /*
         Bool firstVoiceInGameToBlockBecauseWeNeedToSleep = true

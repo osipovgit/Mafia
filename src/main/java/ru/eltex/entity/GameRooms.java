@@ -66,5 +66,5 @@ public class GameRooms {
     /**
      * Поле совершенного действия (голос, выбор)
      */
-    private Boolean doneMove;
+    private Boolean done_move;
 }

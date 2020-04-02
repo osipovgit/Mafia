@@ -46,8 +46,8 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "update rooms set doneMove = :doneMove where number =:number and userId =:userId")
-    void setDoneMoveReverse(@Param("number") Long number, @Param("doneMove") Boolean doneMove, @Param("userId") Long userId);
+    @Query(nativeQuery = true, value = "update rooms set done_move = :done_move where number =:number and userId =:userId")
+    void setDoneMoveReverse(@Param("number") Long number, @Param("done_move") Boolean done_move, @Param("userId") Long userId);
 
     @Modifying
     @Transactional
@@ -56,6 +56,6 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "update rooms set doneMove = :doneMove where number =:number")
-    void setDoneMoveFalse(@Param("number") Long number, @Param("doneMove") Boolean doneMove);
+    @Query(nativeQuery = true, value = "update rooms set done_move = :done_move where number =:number")
+    void setDoneMoveFalse(@Param("number") Long number, @Param("done_move") Boolean done_move);
 }
