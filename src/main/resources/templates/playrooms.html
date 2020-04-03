@@ -62,11 +62,37 @@
         })
     </script>
 </head>
-<body>
-<h1>Playrooms</h1> <br>
-<button type="submit" onclick="create()">Создать комнату</button>
+<body style="background-color: rgba(238,183,131,0.89)">
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand" href="#" style="color: white">Мафия</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+            aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="#" style="color: white">Домик <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="http://www.printplay.ru/kartochnaya-igra-mafiya-karty/" style="color: white">Правила
+                    (да-да, они есть) <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
+            <!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Не работает, но тыкни</button>-->
+        </form>
+    </div>
+</nav>
+<div style="width: 30vw; position: absolute; top: 3vh;">
+    <h1 h1-expand-lg th:inline="text" style="font-size: 2vw; font-family: revert; margin-top: 12vh; margin-left: 2vw">
+        Список райончиков:</h1>
+</div>
+<div class="border border-danger" style="margin-top: 15vh; margin-left: 2vw; width: 20vw; height: 70vh; overflow: auto"
+     id="roomsList"></div>
 <br>
-<br>
-<div id="roomsList"></div>
+<button class="btn btn-danger" type="submit" style="margin-left: 7.5vw" onclick="create()">Создать комнату</button>
 </body>
 </html>

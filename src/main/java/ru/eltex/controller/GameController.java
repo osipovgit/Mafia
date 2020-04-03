@@ -204,6 +204,19 @@ public class GameController {
         }
     }
 
+    @GetMapping("/{roomNumber}/btnCheck")
+    public Integer buttonDelRoomCheck(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        if (Long.parseLong(cookies[0].getValue()) == roomRepo.findTopByNumber(roomNumber).getHostId()) {
+            return 1;
+        } else return 0;
+    }
+
     @GetMapping("/{roomNumber}/chat")
     public String updateChatPerSec(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         Cookie[] cookies = request.getCookies();

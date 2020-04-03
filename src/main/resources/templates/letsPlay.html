@@ -129,6 +129,15 @@
 
         }
 
+        function buttonDelRoom() {
+            $.get(location.href + '/btnCheck').then(function (data) {
+                    if (data === 0) {
+                        $('#forHost').empty();
+                    }
+                }
+            )
+        }
+
         function viewUsersPerSec() {
             setInterval(viewUsers, 1000);
         }
@@ -137,28 +146,66 @@
             viewUsers();
             chatUpdate();
             viewUsersPerSec();
+            buttonDelRoom();
             startCheck();
             resChat();
             startAgain(0);
         })
     </script>
 </head>
-<body>
+<body style="background-color: rgba(238,183,131,0.89)">
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand" href="#" style="color: white">Мафия</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+            aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="#" style="color: white">Домик <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="http://www.printplay.ru/kartochnaya-igra-mafiya-karty/" style="color: white">Правила
+                    (да-да, они есть) <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
+            <!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Не работает, но тыкни</button>-->
+        </form>
+    </div>
+</nav>
 <h1>Зетс руум фор гаме</h1>
-<button type="submit" onclick="leaveRoom()">Покинуть комнату</button>
-<button type="submit" onclick="deleteRoom()">Удалить комнату</button>
 <br>
-<br>
-<br>
-<div id="usersList"></div>
-<br>
+<!--<div id="usersList"></div>-->
 <div id="info"></div>
 <br>
-<div class="border" id="chat" style="overflow: scroll; height: 45vh; width: 50vw"></div>
+<div class="border border-danger" id="chat"
+     style="overflow: auto; height: 65vh; width: 45.7vw; margin-left: 2vw; margin-top: 5vh"></div>
+
 <div>
     <input type="text" class="form-control" placeholder="Опять ты чатишься?!" id="textMessage"
-           style="overflow: scroll; width: 50vw">
-    <button type="submit" onclick="sendMessage()">Отправить</button>
+           style="width: 40vw; margin-left: 2vw">
+    <button class="btn btn-success" style="margin-top: -6.7vh; margin-left: 42vw" type="submit" onclick="sendMessage()">
+        Отправить
+    </button>
+</div>
+
+<div style="width: 40vw; height: 80vh; margin-left: 60vw; margin-top: -87vh">
+    <div class="border border-success" style="height: 30vh; width: 35vw" id="roleInfo"></div>
+    <div class="border border-success" style="width: 35vw; height: 48vh" id="usersList"></div>
+</div>
+
+<div style="margin-left: 69vw; margin-top: 2vh; display: inline-flex">
+    <button class="btn" type="submit" style="background-color: darkorange; color: white" onclick="leaveRoom()">Покинуть
+        комнату
+    </button>
+
+    <div id="forHost" style="margin-left: 0.5vw">
+        <button class="btn btn-danger" type="submit" onclick="deleteRoom()">Удалить комнату</button>
+    </div>
 </div>
 </body>
 </html>
