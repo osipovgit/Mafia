@@ -199,7 +199,8 @@ public class GameController {
         } else if (dateNow.getTime() - gameRoomTop.getTimer() < 60000 & gameRoomsList.size() < 10 & gameRoomTop.getRole().equals("null")) {
             return dateNow.getTime() - gameRoomTop.getTimer(); //TODO: return timer before begin
         } else {
-            roomRepo.updateDate(roomNumber, dateNow.getTime());
+            if (gameRoomTop.getRole().equals("null"))
+                roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 2L;
         }
     }

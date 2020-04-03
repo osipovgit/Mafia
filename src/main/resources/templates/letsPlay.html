@@ -34,10 +34,13 @@
         function letsPlay() {
             setInterval(game, 1000);
         }
+
         var interval;
+
         function startCheck() {
             $.get(location.href + '/start').then(function (data) {
-                    $("#info").html(data + "/60000: время до начала");
+                    if (data === 1)
+                        $("#info").html("Время до начала: " + data + "/60000");
                     if (data === 3) {
                         document.location = "/playrooms";
                         alert("Владелец комнаты удалил ее :(");
@@ -74,6 +77,9 @@
                         }
                     });
                     element.appendChild(fragment);
+                } else {
+                    document.getElementById("textMessage").value = "";
+                    alert("🔫 Ночью в чате общается только мафия 🔫‍");
                 }
             });
 
@@ -120,8 +126,8 @@
                         };
                         buttonElement.textContent = value;
                         fragment.appendChild(buttonElement);
-                        var brb = document.createElement('br');
-                        fragment.appendChild(brb);
+                        // var brb = document.createElement('br');
+                        // fragment.appendChild(brb);
                     }
                 });
                 element.appendChild(fragment);
@@ -147,9 +153,9 @@
             chatUpdate();
             viewUsersPerSec();
             buttonDelRoom();
+            startAgain(0);
             startCheck();
             resChat();
-            startAgain(0);
         })
     </script>
 </head>
@@ -177,34 +183,47 @@
         </form>
     </div>
 </nav>
-<h1>Зетс руум фор гаме</h1>
 <br>
 <!--<div id="usersList"></div>-->
-<div id="info"></div>
-<br>
-<div class="border border-danger" id="chat"
-     style="overflow: auto; height: 65vh; width: 45.7vw; margin-left: 2vw; margin-top: 5vh"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-8" style="margin-left: -7vw">
+            <div id="info"></div>
+            <div style="margin-top: 8vh">
+                <div class="border border-danger" id="chat"
+                     style="overflow: auto; height: 62vh; width: 45.1vw"></div>
+                <div style="display: inline-flex; margin-top: 1vh">
+                    <input type="text" class="form-control" placeholder="Опять ты чатишься?!" id="textMessage"
+                           style="width: 37vw">
+                    <button class="btn btn-success" style="margin-left: 1vh" type="submit" onclick="sendMessage()">
+                        Отправить
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-4" style="margin-left: 2vw">
+            <div>
+                <div style="width: 40vw; height: 80vh">
+                    <div class="border border-success" style="height: 30vh; width: 35vw" id="roleInfo"></div>
+                    <div class="border border-success" style="width: 35vw; height: 38vh" id="usersList"></div>
+                </div>
+                <div style="display: inline-flex; margin-top: -7vh">
+                    <button class="btn" type="submit" style="background-color: darkorange; color: white"
+                            onclick="leaveRoom()">
+                        Покинуть
+                        комнату
+                    </button>
 
-<div>
-    <input type="text" class="form-control" placeholder="Опять ты чатишься?!" id="textMessage"
-           style="width: 40vw; margin-left: 2vw">
-    <button class="btn btn-success" style="margin-top: -6.7vh; margin-left: 42vw" type="submit" onclick="sendMessage()">
-        Отправить
-    </button>
-</div>
-
-<div style="width: 40vw; height: 80vh; margin-left: 60vw; margin-top: -87vh">
-    <div class="border border-success" style="height: 30vh; width: 35vw" id="roleInfo"></div>
-    <div class="border border-success" style="width: 35vw; height: 48vh" id="usersList"></div>
-</div>
-
-<div style="margin-left: 69vw; margin-top: 2vh; display: inline-flex">
-    <button class="btn" type="submit" style="background-color: darkorange; color: white" onclick="leaveRoom()">Покинуть
-        комнату
-    </button>
-
-    <div id="forHost" style="margin-left: 0.5vw">
-        <button class="btn btn-danger" type="submit" onclick="deleteRoom()">Удалить комнату</button>
+                    <div id="forHost">
+                        <button class="btn btn-danger" style="margin-left: 1vw" type="submit" onclick="deleteRoom()">
+                            Удалить
+                            комнату
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
     </div>
 </div>
 </body>
