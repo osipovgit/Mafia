@@ -73,6 +73,11 @@ public class GameController {
         gameRooms.setStageOne(true);
         gameRooms.setPhase(1);
         gameRooms.setDone_move(false);
+        gameRooms.setDone_move(false);
+        gameRooms.setGirlChoice(false);
+        gameRooms.setDocChoice(false);
+        gameRooms.setMafiaChoice(0);
+        gameRooms.setVote(0);
         gameRooms.setRole("null");
         roomRepo.save(gameRooms);
         System.out.println("Создана комната: " + gameRooms.getNumber());
@@ -144,6 +149,10 @@ public class GameController {
             gameRooms.setStageOne(true);
             gameRooms.setPhase(1);
             gameRooms.setDone_move(false);
+            gameRooms.setGirlChoice(false);
+            gameRooms.setDocChoice(false);
+            gameRooms.setMafiaChoice(0);
+            gameRooms.setVote(0);
             gameRooms.setRole("null");
             roomRepo.save(gameRooms);
             System.out.println("Пользователь: " + userRepoById.getUsername() + " присоединяется к комнате: " + roomNumber);
@@ -192,7 +201,7 @@ public class GameController {
         List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
         Date dateNow = new Date();
         if (gameRoomTop == null)
-            return 3L;
+            return -3L;
         if (gameRoomsList.size() <= 1) { // TODO: change to < 5
             roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 0L;
@@ -201,7 +210,7 @@ public class GameController {
         } else {
             if (gameRoomTop.getRole().equals("null"))
                 roomRepo.updateDate(roomNumber, dateNow.getTime());
-            return 2L;
+            return -2L;
         }
     }
 
@@ -315,6 +324,10 @@ public class GameController {
                         roomRepo.setVoiceOn(roomNumber,
                                 roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getVote() + 1,
                                 userRepo.findByUsernameOrId(yourChoice, null).getId());
+                        Messages message = new Messages();
+                        message.setRoomNumber(roomNumber);
+                        message.setMessage("sys: " + userRepoById.getUsername() + ": votes for " + yourChoice);
+                        messagesRepo.save(message);
                     }
                     // TODO: в чат "проголосовал против" STRING
                 case 3:
