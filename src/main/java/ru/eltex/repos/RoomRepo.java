@@ -48,13 +48,13 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "update rooms set vote = :vote where number =:number and userId =:userId")
-    void setVoiceOn(@Param("number") Long number, @Param("vote") Integer vote, @Param("userId") Long userId);
+    @Query(nativeQuery = true, value = "update rooms set vote = :vote where number =:number and user_id =:user_id")
+    void setVoiceOn(@Param("number") Long number, @Param("vote") Integer vote, @Param("user_id") Long user_id);
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "update rooms set done_move = :done_move where number =:number and userId =:userId")
-    void setDoneMoveReverse(@Param("number") Long number, @Param("done_move") Boolean done_move, @Param("userId") Long userId);
+    @Query(nativeQuery = true, value = "update rooms set done_move = :done_move where number =:number and user_id =:user_id")
+    void setDoneMoveReverse(@Param("number") Long number, @Param("done_move") Boolean done_move, @Param("user_id") Long user_id);
 
     @Modifying
     @Transactional
@@ -63,8 +63,8 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "update rooms set role = :role where number =:number and userId =:userId")
-    void setRoles(@Param("number") Long number, @Param("role") String role, @Param("userId") Long userId);
+    @Query(nativeQuery = true, value = "update rooms set role = :role where number =:number and user_id =:user_id")
+    void setRoles(@Param("number") Long number, @Param("role") String role, @Param("user_id") Long user_id);
 
     @Modifying
     @Transactional

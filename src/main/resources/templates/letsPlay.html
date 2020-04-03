@@ -34,7 +34,7 @@
         function letsPlay() {
             setInterval(game, 1000);
         }
-
+        var interval;
         function startCheck() {
             $.get(location.href + '/start').then(function (data) {
                     $("#info").html(data + "/60000: время до начала");
@@ -52,7 +52,7 @@
         function startAgain(data) {
             console.log(data);
             if (data === 0)
-                var interval = setInterval(startCheck, 1000);
+                interval = setInterval(startCheck, 1000);
             if (data === 1)
                 clearInterval(interval);
         }

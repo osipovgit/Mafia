@@ -45,12 +45,12 @@ public class WebController {
                 cookies[0] = cookie;
                 break;
             }
-        System.out.println(cookies[0].getValue()); //TODO: удалить проверочку id from cookie в sout
+        if (request.getCookies() == null)
+            return "redirect:/signup";
+        else if (!cookies[0].getName().equals("userId"))
+            return "redirect:/signup";
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         userRepoById.setPassword(null);
-//        ObjectMapper mapper = new ObjectMapper();
-//        String str = mapper.writeValueAsString(userRepoById);
-//        System.out.println(str);
         model.addAttribute("user", userRepoById);
         return "home.html";
     }
@@ -64,15 +64,28 @@ public class WebController {
                 break;
             }
         }
+        if (request.getCookies() == null)
+            return "redirect:/signup";
+        else if (!cookies[0].getName().equals("userId"))
+            return "redirect:/signup";
         if (roomRepo.findByNumberAndUserId(roomNumber, Long.parseLong(cookies[0].getValue())) != null)
             return "letsPlay.html";
         else return "redirect:/playrooms";
     }
 
     @GetMapping("/playrooms")
-    public String playroom(Model model) {
-
-        return "playrooms.html";
+    public String playroom(Model model, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        }
+        if (request.getCookies() == null)
+            return "redirect:/signup";
+        else if (!cookies[0].getName().equals("userId"))
+            return "redirect:/signup";
+        else return "playrooms.html";
     }
-
 }

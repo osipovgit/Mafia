@@ -33,11 +33,6 @@ public class RegistrationController {
         }
         Cookie cookie = new Cookie("userId", userRepoByUsername.getId().toString());
         response.addCookie(cookie);
-//        userRepoByUsername.setPassword(null);
-//        ObjectMapper mapper = new ObjectMapper();
-//        String str = mapper.writeValueAsString(userRepoByUsername);
-//        System.out.println(str);
-//        model.addAttribute("userJson", str);
         return "redirect:/home";
     }
 
