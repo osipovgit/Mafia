@@ -73,6 +73,7 @@ public class GameController {
         gameRooms.setStageOne(true);
         gameRooms.setPhase(1);
         gameRooms.setDone_move(false);
+        gameRooms.setRole("null");
         roomRepo.save(gameRooms);
         System.out.println("Создана комната: " + gameRooms.getNumber());
         return "/playrooms/" + gameRooms.getNumber();
@@ -143,6 +144,7 @@ public class GameController {
             gameRooms.setStageOne(true);
             gameRooms.setPhase(1);
             gameRooms.setDone_move(false);
+            gameRooms.setRole("null");
             roomRepo.save(gameRooms);
             System.out.println("Пользователь: " + userRepoById.getUsername() + " присоединяется к комнате: " + roomNumber);
             return "/playrooms/" + roomNumber;
@@ -160,7 +162,8 @@ public class GameController {
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
-        if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole() == null) {
+        if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole().equals("null")) {
+            messagesRepo.deleteAllByRoomNumber(roomNumber);
             roomRepo.deleteAllByNumber(roomNumber);
             return "/playrooms";
         } else return "/playrooms/" + roomNumber;
@@ -176,7 +179,7 @@ public class GameController {
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId());
-        if (userRepoById.getId().equals(gameRooms.getUserId()) && gameRooms.getRole() == null) {
+        if (userRepoById.getId().equals(gameRooms.getUserId()) && gameRooms.getRole().equals("null")) {
             roomRepo.deleteByNumberAndUserId(roomNumber, userRepoById.getId());
             System.out.println("Пользователь: " + userRepoById.getUsername() + " покинул комнату номер: " + roomNumber);
             return "/playrooms";
@@ -193,8 +196,8 @@ public class GameController {
         if (gameRoomsList.size() <= 1) { // TODO: change to < 5
             roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 0L;
-        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 60000 & gameRoomsList.size() < 10 & gameRoomTop.getRole() == null) {
-            return 1L; //TODO: return timer before begin
+        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 60000 & gameRoomsList.size() < 10 & gameRoomTop.getRole().equals("null")) {
+            return dateNow.getTime() - gameRoomTop.getTimer(); //TODO: return timer before begin
         } else {
             roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 2L;
@@ -203,44 +206,54 @@ public class GameController {
 
     @GetMapping("/{roomNumber}/chat")
     public String updateChatPerSec(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
-        List<Messages> messages = messagesRepo.findAllByRoomNumberOrderById(roomNumber);
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonStr = null;
-        try {
-            jsonStr = mapper.writeValueAsString(messages);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
+        if (roomRepo.findTopByNumber(roomNumber).getPhase() < 3 | (roomRepo.findTopByNumber(roomNumber).getPhase() == 3 & roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getRole().equals("mafia"))) {
+            List<Messages> messages = messagesRepo.findAllByRoomNumberOrderById(roomNumber);
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonStr = null;
+            try {
+                jsonStr = mapper.writeValueAsString(messages);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
 //        System.out.println(jsonStr);
-        return jsonStr;
+            return jsonStr;
+        } else return "";
     }
-    // TODO: добавить отображение на фазу 3 для роли "мафия"
 
     @GetMapping("/{roomNumber}/chat/{newMessage}")
     public String updateChat(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model, @PathVariable String newMessage) {
-        if (!newMessage.equals("")) {
-            Messages messages = new Messages();
-            Cookie[] cookies = request.getCookies();
-            for (Cookie cookie : cookies)
-                if (cookie.getName().equals("userId")) {
-                    cookies[0] = cookie;
-                    break;
-                }
-            User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
-            messages.setRoomNumber(roomNumber);
-            messages.setMessage(userRepoById.getUsername() + ": " + newMessage);
-            messagesRepo.save(messages);
-        }
-        List<Messages> messages = messagesRepo.findAllByRoomNumberOrderById(roomNumber);
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonStr = null;
-        try {
-            jsonStr = mapper.writeValueAsString(messages);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
+        if (roomRepo.findTopByNumber(roomNumber).getPhase() < 3 | (roomRepo.findTopByNumber(roomNumber).getPhase() == 3 & roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getRole().equals("mafia"))) {
+            if (!newMessage.equals("")) {
+                Messages messages = new Messages();
+                messages.setRoomNumber(roomNumber);
+                messages.setMessage(userRepoById.getUsername() + ": " + newMessage);
+                messagesRepo.save(messages);
+            }
+            List<Messages> messages = messagesRepo.findAllByRoomNumberOrderById(roomNumber);
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonStr = null;
+            try {
+                jsonStr = mapper.writeValueAsString(messages);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
 //        System.out.println(jsonStr);
-        return jsonStr;
+            return jsonStr;
+        } else return "";
     }
 
     @GetMapping("/{roomNumber}/update_view_players")
@@ -297,23 +310,32 @@ public class GameController {
     @GetMapping("/{roomNumber}/game")
     public String gameMode(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
-//        if (gameRooms.getRole() == null & gameRooms.getStageOne().equals(true)) {
-//        } TODO: set role for all
+        if (gameRooms.getRole() == null & gameRooms.getStageOne().equals(true)) {
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies)
+                if (cookie.getName().equals("userId")) {
+                    cookies[0] = cookie;
+                    break;
+                }
+            User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
+            if (roomRepo.findAllByNumber(roomNumber).size() == 2 & userRepoById.getUsername() == "f") {
+                roomRepo.setRoles(roomNumber, "c", userRepoById.getId());
+            }
+        } //TODO: set role for all
         Date dateNow = new Date();
         String string = "";
         switch (gameRooms.getPhase()) {
             case 1:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 120000) {
+                if (dateNow.getTime() - gameRooms.getTimer() >= 12000) {
                     roomRepo.updatePhase(roomNumber, 2);
                     Date date = new Date();
                     roomRepo.updateDate(roomNumber, date.getTime());
                     roomRepo.setDoneMoveFalse(roomNumber, false);
-                    roomRepo.setVoiceZero(roomNumber, 0);
                 }
                 string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
                 break;
             case 2:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 60000) {
+                if (dateNow.getTime() - gameRooms.getTimer() >= 6000) {
                     if (gameRooms.getStageOne().equals(true)) {
                         string = string;
                     } else {
@@ -323,19 +345,18 @@ public class GameController {
                     Date date = new Date();
                     roomRepo.updateDate(roomNumber, date.getTime());
                     roomRepo.setDoneMoveFalse(roomNumber, false);
-                    roomRepo.setVoiceZero(roomNumber, 0);
+                    roomRepo.setVoteZero(roomNumber, 0);
                     messagesRepo.deleteAllByRoomNumber(roomNumber);
                 }
                 string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
                 break;
             case 3:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 120000) {
+                if (dateNow.getTime() - gameRooms.getTimer() >= 12000) {
+                    messagesRepo.deleteAllByRoomNumber(roomNumber);
                     roomRepo.updatePhase(roomNumber, 1);
                     Date date = new Date();
                     roomRepo.updateDate(roomNumber, date.getTime());
-                    roomRepo.setDoneMoveFalse(roomNumber, false);
-                    roomRepo.setVoiceZero(roomNumber, 0);
-                    messagesRepo.deleteAllByRoomNumber(roomNumber);
+                    roomRepo.resetAll(roomNumber, false, false, false, 0);
                 }
                 string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
                 break;
