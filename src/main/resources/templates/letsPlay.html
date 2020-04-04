@@ -20,35 +20,71 @@
         }
 
         function clickHim(data) {
-            $.get(location.href + '/click_to_user/' + data.id).then(function () {
+            $.get(location.href + '/click_to_user/' + data.id).then(function (addToChat) {
+                if (addToChat[0] === "<") {
+                    var temp = document.getElementById("textMessage").value;
+                    document.getElementById("textMessage").value = temp + " " + addToChat + " ";
+                } else if (addToChat[0] === "Y")
+                    alert(addToChat);
                 console.log(data.id)
             });
         }
 
         function game() {
-            $.get(location.href + '/game').then(function (data) {
-                $("#info").html(data);
+            $.get(location.href + '/game').then(function (jsonGameRooms) {
+                if (jsonGameRooms[0] !== "[") {
+                    startAgain(0);
+                    letsPlay(1);
+                    alert(jsonGameRooms);
+                } else {
+                    $("#info").empty();
+                    $("#roleInfo").empty();
+                    var elementInfo = document.getElementById('info');
+                    var fragmentInfo = document.createDocumentFragment();
+                    var elementRole = document.getElementById('roleInfo');
+                    var fragmentRole = document.createDocumentFragment();
+                    var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
+                        if (key === "timer") {
+                            var messageElementInfo = document.createElement('a');
+                            messageElementInfo.textContent = value;
+                            fragmentInfo.appendChild(messageElementInfo);
+                        } else if (key === "role") {
+                            var messageElementRole = document.createElement('a');
+                            messageElementRole.style = "font-size: 5vh; font-family: revert";
+
+                            messageElementRole.textContent = value;
+                            fragmentRole.appendChild(messageElementRole);
+                        }
+                    });
+                    elementInfo.appendChild(fragmentInfo);
+                    elementRole.appendChild(fragmentRole);
+                }
             });
         }
 
-        function letsPlay() {
-            setInterval(game, 1000);
+        var intervalGame;
+
+        function letsPlay(data) {
+            if (data === 0)
+                intervalGame = setInterval(game, 1000);
+            if (data === 1)
+                clearInterval(intervalGame);
         }
 
         var interval;
 
         function startCheck() {
             $.get(location.href + '/start').then(function (data) {
-                    if (data !== -2 && data !== -3 && data !== 0)
-                        $("#info").html("Время до начала: " + data + "/60000");
-                    else if (data === 0) {
-                        $("#info").html("Регистрация...");
+                if (data !== -2 && data !== -3 && data !== 0)
+                    $("#info").html("Время до начала: " + (60 - data));
+                else if (data === 0) {
+                    $("#info").html("Регистрация...");
                     } else if (data === -3) {
                         document.location = "/playrooms";
                         alert("Владелец комнаты удалил ее :(");
                     } else if (data === -2) {
-                        startAgain(1);
-                        letsPlay();
+                    startAgain(1);
+                    letsPlay(0);
                     }
                 }
             )

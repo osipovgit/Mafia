@@ -50,6 +50,7 @@ public class RegistrationController {
         }
         user.setCountGame(0L);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setGameMode(0);
         userRepo.save(user);
         return "redirect:/authorization";
     }

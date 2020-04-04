@@ -33,6 +33,10 @@ public class User {
      * Поле количество игр
      */
     private Long countGame;
+    /**
+     * Поле количество игр
+     */
+    private Integer gameMode;
 
     public User() {
     }

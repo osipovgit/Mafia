@@ -14,6 +14,8 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     List<GameRooms> findAllByNumber(Long number);
 
+    List<GameRooms> findAllByNumberOrderByVoteDesc(Long number);
+
     GameRooms findByNumberAndUserId(Long number, Long userId);
 
     @Override
@@ -43,8 +45,8 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "update rooms set stageOne = :stageOne where number =:number")
-    void updateStage(@Param("number") Long number, @Param("stageOne") Boolean stageOne);
+    @Query(nativeQuery = true, value = "update rooms set stage_one = :stage_one where number =:number")
+    void updateStage(@Param("number") Long number, @Param("stage_one") Boolean stage_one);
 
     @Modifying
     @Transactional
@@ -65,6 +67,11 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
     @Transactional
     @Query(nativeQuery = true, value = "update rooms set role = :role where number =:number and user_id =:user_id")
     void setRoles(@Param("number") Long number, @Param("role") String role, @Param("user_id") Long user_id);
+
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "update rooms set role = :role where number =:number")
+    void resetRoles(@Param("number") Long number, @Param("role") String role);
 
     @Modifying
     @Transactional

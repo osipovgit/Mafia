@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.random;
+
 /**
  * Класс-контроллер
  *
@@ -49,6 +51,8 @@ public class GameController {
         this.roomRepo = roomRepo;
     }
 
+    ArrayList stringList = new ArrayList(Arrays.asList("mafia", "doctor", "civilian", "sheriff", "girl", "civilian", "civilian", "mafia", "mafia", "civilian"));
+
     //    /**
 //     * Метод для сопоставления с точкой входа <b>/get_user</b>
 //     * @param id - User#id пользователя
@@ -73,7 +77,6 @@ public class GameController {
         gameRooms.setStageOne(true);
         gameRooms.setPhase(1);
         gameRooms.setDone_move(false);
-        gameRooms.setDone_move(false);
         gameRooms.setGirlChoice(false);
         gameRooms.setDocChoice(false);
         gameRooms.setMafiaChoice(0);
@@ -88,12 +91,20 @@ public class GameController {
     public String viewAllRooms(HttpServletRequest request, Model model) {
         if (roomRepo.findAll() == null)
             return "";
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
         List<GameRooms> gameRooms = roomRepo.findAll().stream().sorted(Comparator.comparing(GameRooms::getNumber)).collect(Collectors.toList());
         int count = 0;
         String hostName = "";
         long roomNumNow = -1;
         infoRepo.deleteAll();
         for (GameRooms gameRoom : gameRooms) {
+            if (!gameRoom.getRole().equals("null") & roomRepo.findByNumberAndUserId(gameRoom.getNumber(), Long.parseLong(cookies[0].getValue())) == null)
+                continue;
             if (roomNumNow == -1) {
                 roomNumNow = gameRoom.getNumber();
             }
@@ -205,8 +216,8 @@ public class GameController {
         if (gameRoomsList.size() <= 1) { // TODO: change to < 5
             roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 0L;
-        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 60000 & gameRoomsList.size() < 10 & gameRoomTop.getRole().equals("null")) {
-            return dateNow.getTime() - gameRoomTop.getTimer(); //TODO: return timer before begin
+        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 15000 & gameRoomsList.size() < 10 & gameRoomTop.getRole().equals("null")) {
+            return (dateNow.getTime() - gameRoomTop.getTimer()) / 1000;
         } else {
             if (gameRoomTop.getRole().equals("null"))
                 roomRepo.updateDate(roomNumber, dateNow.getTime());
@@ -314,11 +325,11 @@ public class GameController {
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         GameRooms gameRooms = roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId());
-        if (!userRepoById.getUsername().equals(yourChoice)
-                && gameRooms != null && !gameRooms.getDone_move()) {
+        if (!userRepoById.getUsername().equals(yourChoice) && !gameRooms.getRole().equals("observer")
+                && gameRooms != null && !gameRooms.getDone_move() && !roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getRole().equals("observer")) {
             switch (gameRoomsTop.getPhase()) {
                 case 1:
-                    return " [" + yourChoice + "] ";
+                    return "<" + yourChoice + ">";
                 case 2:
                     if (!roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getGirlChoice()) {
                         roomRepo.setVoiceOn(roomNumber,
@@ -328,9 +339,22 @@ public class GameController {
                         message.setRoomNumber(roomNumber);
                         message.setMessage("sys: " + userRepoById.getUsername() + ": votes for " + yourChoice);
                         messagesRepo.save(message);
-                    }
-                    // TODO: в чат "проголосовал против" STRING
+                    } else return "<" + yourChoice + ">";
+                    break;
                 case 3:
+                    switch (gameRooms.getRole()) {
+                        case "mafia":
+                            roomRepo.setMafiaChoiceOn(roomNumber, roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getMafiaChoice() + 1, userRepo.findByUsernameOrId(yourChoice, null).getId());
+                            break;
+                        case "doctor":
+                            roomRepo.setDoctorChoiceOn(roomNumber, true, userRepo.findByUsernameOrId(yourChoice, null).getId());
+                            break;
+                        case "sheriff":
+                            return (roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getRole().equals("mafia") ? "You found the mafia!" : "You have not found the mafia!");
+                        case "girl":
+                            roomRepo.setGirlChoiceOn(roomNumber, true, userRepo.findByUsernameOrId(yourChoice, null).getId());
+                            break;
+                    }
                     break;
             }
             roomRepo.setDoneMoveReverse(roomNumber, true, userRepoById.getId());
@@ -341,86 +365,105 @@ public class GameController {
     @GetMapping("/{roomNumber}/game")
     public String gameMode(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
-        if (gameRooms.getRole().equals("null") & gameRooms.getStageOne().equals(true)) {
+        if (gameRooms.getRole().equals("null")) {
             List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
             Collections.shuffle(gameRoomsList);
-            ArrayList<String> stringList = new ArrayList<>();
-            if (gameRoomsList.size() == 2) {
-                stringList.add("mafia");
-                stringList.add("civilian");
-            } else if (gameRoomsList.size() >= 5) {
-                stringList.add("mafia");
-                stringList.add("civilian");
-                stringList.add("doctor");
-                stringList.add("sheriff");
-                stringList.add("girl");
-            }
-            if (gameRoomsList.size() >= 6) {
-                stringList.add("civilian");
-            }
-            if (gameRoomsList.size() >= 7) {
-                stringList.add("mafia");
-            }
-            if (gameRoomsList.size() >= 8) {
-                stringList.add("civilian");
-            }
-            if (gameRoomsList.size() >= 9) {
-                stringList.add("mafia");
-            }
-            if (gameRoomsList.size() == 10) {
-                stringList.add("civilian");
-            }
-            int i = 0;
+            int indexRole = 0;
             for (GameRooms gameRoom : gameRoomsList) {
-                roomRepo.setRoles(roomNumber, stringList.get(i++), gameRoom.getUserId());
-                System.out.println(gameRoom);
+                roomRepo.setRoles(roomNumber, (String) stringList.get(indexRole++), gameRoom.getUserId());
             }
-
-        } //TODO: set role for all
+        }
         Date dateNow = new Date();
-        String string = "";
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies)
+            if (cookie.getName().equals("userId")) {
+                cookies[0] = cookie;
+                break;
+            }
+        User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
+        String string = "[{";
+        string += "\"role\":\"" + roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getRole().toUpperCase() + "\",\"phase\":" + gameRooms.getPhase() + ",";
         switch (gameRooms.getPhase()) {
-            case 1:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 120000) {
-                    roomRepo.updatePhase(roomNumber, 2);
-                    Date date = new Date();
-                    roomRepo.updateDate(roomNumber, date.getTime());
-                    roomRepo.setDoneMoveFalse(roomNumber, false);
+            case 0:
+                List<GameRooms> roomsOrderD = roomRepo.findAllByNumberOrderByVoteDesc(roomNumber);
+                int countMaf = 0;
+                for (GameRooms gameRoom : roomsOrderD) {
+                    countMaf += gameRoom.getRole().equals("mafia") ? 1 : 0;
                 }
-                string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
+                if (countMaf == 0)
+                    string = "Civilians won!!!";
+                else string = "Mafia won!!!";
+                messagesRepo.deleteAllByRoomNumber(roomNumber);
+                roomRepo.updatePhase(roomNumber, 1);
+                roomRepo.updateStage(roomNumber, true);
+                roomRepo.updateDate(roomNumber, new Date().getTime());
+                roomRepo.resetAll(roomNumber, false, false, false, 0);
+                roomRepo.resetRoles(roomNumber, "null");
+                return string;
+            case 1:
+                if (dateNow.getTime() - gameRooms.getTimer() >= 12000) {
+                    if (gameRooms.getStageOne()) {
+                        roomRepo.updatePhase(roomNumber, 3);
+                        roomRepo.updateStage(roomNumber, false);
+                    } else
+                        roomRepo.updatePhase(roomNumber, 2);
+                    roomRepo.updateDate(roomNumber, new Date().getTime());
+                    roomRepo.setDoneMoveFalse(roomNumber, false);
+                } else
+                    string += "\"timer\":\"0" + (1 - ((dateNow.getTime() - gameRooms.getTimer()) / 60000)) + ":" + ((((dateNow.getTime() - gameRooms.getTimer()) / 1000) % 60) > 50 ? "0" : "") + (60 - (((dateNow.getTime() - gameRooms.getTimer()) / 1000)) % 60) + "\"";
                 break;
             case 2:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 60000) {
-                    if (gameRooms.getStageOne().equals(true)) {
-                        string = string;
-                    } else {
-                        roomRepo.updateStage(roomNumber, false);
+                if (dateNow.getTime() - gameRooms.getTimer() >= 6000) {
+                    List<GameRooms> roomsOrderDesc = roomRepo.findAllByNumberOrderByVoteDesc(roomNumber);
+                    int countMafia = 0, countOther = 0, maxVote = 0, countVote = 0;
+                    for (GameRooms gameRoom : roomsOrderDesc) {
+                        maxVote = Math.max(gameRoom.getVote(), maxVote);
+                        countVote = gameRoom.getVote() == maxVote ? ++countVote : countVote;
+                        countMafia += gameRoom.getRole().equals("mafia") ? 1 : 0;
+                        countOther += !gameRoom.getRole().equals("mafia") & !gameRoom.getRole().equals("observer") ? 1 : 0;
+                        if (gameRoom.getRole().equals("observer"))
+                            roomsOrderDesc.remove(gameRoom);
                     }
-                    roomRepo.updatePhase(roomNumber, 3);
-                    Date date = new Date();
-                    roomRepo.updateDate(roomNumber, date.getTime());
+                    countVote = (int) (random() * countVote);
+                    for (GameRooms gameRoom : roomsOrderDesc) {
+                        if (countVote-- == 0) {
+                            roomRepo.setRoles(roomNumber, "observer", gameRoom.getUserId());
+                            if (gameRoom.getRole().equals("mafia"))
+                                --countMafia;
+                            else --countOther;
+                            break;
+                        }
+                    }
+                    if (countMafia == 0 | countOther == 0)
+                        roomRepo.updatePhase(roomNumber, 0);
+                    else
+                        roomRepo.updatePhase(roomNumber, 3);
+                    roomRepo.updateDate(roomNumber, new Date().getTime());
                     roomRepo.setDoneMoveFalse(roomNumber, false);
                     roomRepo.setVoteZero(roomNumber, 0);
                     messagesRepo.deleteAllByRoomNumber(roomNumber);
                 }
-                string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
+                string += "\"timer\":\"00:" + (((dateNow.getTime() - gameRooms.getTimer()) / 1000) > 50 ? "0" : "") + (60 - ((dateNow.getTime() - gameRooms.getTimer()) / 1000)) + "\"";
                 break;
             case 3:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 120000) {
+                if (dateNow.getTime() - gameRooms.getTimer() >= 12000) {
                     messagesRepo.deleteAllByRoomNumber(roomNumber);
                     roomRepo.updatePhase(roomNumber, 1);
                     Date date = new Date();
                     roomRepo.updateDate(roomNumber, date.getTime());
                     roomRepo.resetAll(roomNumber, false, false, false, 0);
                 }
-                string = "" + (dateNow.getTime() - gameRooms.getTimer()) + " " + gameRooms.getPhase();
+                string += "\"timer\":\"0" + (1 - ((dateNow.getTime() - gameRooms.getTimer()) / 60000)) + ":" + ((((dateNow.getTime() - gameRooms.getTimer()) / 1000) % 60) > 50 ? "0" : "") + (60 - (((dateNow.getTime() - gameRooms.getTimer()) / 1000)) % 60) + "\"";
                 break;
         }
-        return string;
+//        System.out.println(string + "}]");
+        return string + "}]";
     }
 }
 /*
 {
+    "[{"timer":" + 1 + ","phase":" + "f","role":"f","infoRole":"f"}]
+
     ["numberRoom": "roomNum"
     "messages": [{"message" : .getUsername() + ": " + "привет дарагие патпищики"},
                  {"message" : "Lanturn: @$%!* иди"},
