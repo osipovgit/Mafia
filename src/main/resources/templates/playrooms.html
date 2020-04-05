@@ -15,8 +15,11 @@
         }
 
         function clickRoom(data) {
-            $.get(location.href + "/" + data.id + '/joinPlayer').then(function (datata) {
-                document.location = datata;
+            $.get(location.href + "/" + data.id + '/joinPlayer').then(function (dataRoom) {
+                if (dataRoom[0] === "T")
+                    alert(dataRoom);
+                else
+                    document.location = dataRoom;
             });
         }
 

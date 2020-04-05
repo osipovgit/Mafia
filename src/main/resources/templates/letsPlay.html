@@ -32,10 +32,10 @@
 
         function game() {
             $.get(location.href + '/game').then(function (jsonGameRooms) {
-                if (jsonGameRooms[0] !== "[") {
-                    startAgain(0);
+                if (jsonGameRooms === "") {
+                    console.log("game stop");
                     letsPlay(1);
-                    alert(jsonGameRooms);
+                    startAgain(0);
                 } else {
                     $("#info").empty();
                     $("#roleInfo").empty();
@@ -65,6 +65,7 @@
         var intervalGame;
 
         function letsPlay(data) {
+            console.log("letsPlay " + data);
             if (data === 0)
                 intervalGame = setInterval(game, 1000);
             if (data === 1)
@@ -75,6 +76,7 @@
 
         function startCheck() {
             $.get(location.href + '/start').then(function (data) {
+                console.log("st Check");
                 if (data !== -2 && data !== -3 && data !== 0)
                     $("#info").html("Время до начала: " + (60 - data));
                 else if (data === 0) {
@@ -83,6 +85,7 @@
                         document.location = "/playrooms";
                         alert("Владелец комнаты удалил ее :(");
                     } else if (data === -2) {
+                    console.log("start");
                     startAgain(1);
                     letsPlay(0);
                     }
@@ -91,7 +94,7 @@
         }
 
         function startAgain(data) {
-            console.log(data);
+            console.log("startAgain " + data);
             if (data === 0)
                 interval = setInterval(startCheck, 1000);
             if (data === 1)

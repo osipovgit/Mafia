@@ -13,6 +13,9 @@ public interface MessagesRepo extends JpaRepository<Messages, Long> {
 
     List<Messages> findAllByRoomNumberOrderById(Long roomNumber);
 
+    Messages findByRoomNumberAndMessage(Long roomNumber, String message);
+
+
     @Modifying
     @Transactional
     void deleteAllByRoomNumber(@Param("roomNumber") Long roomNumber);
