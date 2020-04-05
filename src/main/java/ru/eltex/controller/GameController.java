@@ -51,15 +51,8 @@ public class GameController {
         this.roomRepo = roomRepo;
     }
 
-    //    ArrayList stringRoles = new ArrayList(Arrays.asList("mafia", "doctor", "civilian", "sheriff", "girl", "civilian", "civilian", "mafia", "mafia", "civilian"));
     String[] stringRoles = {"mafia", "doctor", "civilian", "sheriff", "girl", "civilian", "civilian", "mafia", "mafia", "civilian"};
 
-    //    /**
-//     * Метод для сопоставления с точкой входа <b>/get_user</b>
-//     * @param id - User#id пользователя
-//     * @return Объект пользователя
-//     * @see User#User()
-//     */
     @GetMapping("/create")
     public String createRoom(HttpServletRequest request, Model model) {
         GameRooms gameRooms = new GameRooms();
@@ -368,12 +361,13 @@ public class GameController {
     public String gameMode(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
         if (gameRooms.getRole().equals("null")) {
+            if (gameRooms.getPhase() == 0)
+                return "";
             roomRepo.updateDate(roomNumber, new Date().getTime());
             List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
             Collections.shuffle(gameRoomsList);
             int indexRole = 0;
             for (GameRooms gameRoom : gameRoomsList) {
-//                roomRepo.setRoles(roomNumber, (String) stringRoles.get(indexRole++), gameRoom.getUserId());
                 roomRepo.setRoles(roomNumber, (String) stringRoles[indexRole++], gameRoom.getUserId());
             }
             System.out.println("Set roles");
@@ -399,6 +393,7 @@ public class GameController {
                 }
                 Messages message = new Messages();
                 message.setRoomNumber(roomNumber);
+                System.out.println("CountMafia final:" + countMaf);
                 if (countMaf == 0) {
                     message.setMessage("Civilians won!!!");
                 } else
@@ -429,25 +424,27 @@ public class GameController {
                     System.out.println("Phase 2");
                     List<GameRooms> roomsOrderDesc = roomRepo.findAllByNumberOrderByVoteDesc(roomNumber);
                     int countMafia = 0, countOther = 0, maxVote = 0, countVote = 0;
+                    roomsOrderDesc.removeIf(x -> x.getRole().equals("observer"));
                     for (GameRooms gameRoom : roomsOrderDesc) {
                         maxVote = Math.max(gameRoom.getVote(), maxVote);
                         countVote = gameRoom.getVote() == maxVote ? ++countVote : countVote;
                         countMafia += gameRoom.getRole().equals("mafia") ? 1 : 0;
-                        countOther += !gameRoom.getRole().equals("mafia") & !gameRoom.getRole().equals("observer") ? 1 : 0;
-                        if (gameRoom.getRole().equals("observer"))
-                            roomsOrderDesc.remove(gameRoom);
+                        countOther += !gameRoom.getRole().equals("mafia") ? 1 : 0;
                     }
+
+                    System.out.println("mV:" + maxVote + " couV:" + countVote + " cM:" + countMafia + " cO:" + countOther);
                     countVote = (int) (random() * countVote);
                     for (GameRooms gameRoom : roomsOrderDesc) {
                         System.out.println("cV: " + countVote + " user: " + gameRoom.getUserId() + " role: " + gameRoom.getRole());
                         if (countVote-- == 0) {
                             roomRepo.setRoles(roomNumber, "observer", gameRoom.getUserId());
                             if (gameRoom.getRole().equals("mafia"))
-                                --countMafia;
-                            else --countOther;
+                                countMafia -= 1;
+                            else countOther -= 1;
                             break;
                         }
                     }
+                    string += ",\"count\":\"Mafia: " + countMafia + " | Civilian: " + countOther + "\"";
                     if (countMafia == 0 | countOther == 0) {
                         roomRepo.updatePhase(roomNumber, 0);
                     } else {

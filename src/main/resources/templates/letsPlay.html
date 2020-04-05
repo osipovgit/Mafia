@@ -43,6 +43,8 @@
                     var fragmentInfo = document.createDocumentFragment();
                     var elementRole = document.getElementById('roleInfo');
                     var fragmentRole = document.createDocumentFragment();
+                    var elementCount = document.getElementById('countPlayers');
+                    var fragmentCount = document.createDocumentFragment();
                     var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
                         if (key === "timer") {
                             var messageElementInfo = document.createElement('a');
@@ -54,10 +56,17 @@
 
                             messageElementRole.textContent = value;
                             fragmentRole.appendChild(messageElementRole);
+                        } else if (key === "count") {
+                            $("#countPlayers").empty();
+                            var messageCount = document.createElement('a');
+                            messageCount.textContent = value;
+                            fragmentCount.appendChild(messageCount);
                         }
+
                     });
                     elementInfo.appendChild(fragmentInfo);
                     elementRole.appendChild(fragmentRole);
+                    elementCount.appendChild(fragmentCount);
                 }
             });
         }
@@ -246,6 +255,7 @@
             <div>
                 <div style="width: 40vw; height: 80vh">
                     <div class="border border-success" style="height: 30vh; width: 35vw" id="roleInfo"></div>
+                    <div class="border border-success" style="height: 30vh; width: 35vw" id="countPlayers"></div>
                     <div class="border border-success" style="width: 35vw; height: 38vh" id="usersList"></div>
                 </div>
                 <div style="display: inline-flex; margin-top: -7vh">
