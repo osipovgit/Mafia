@@ -26,6 +26,8 @@
                     document.getElementById("textMessage").value = temp + " " + addToChat + " ";
                 } else if (addToChat[0] === "Y")
                     alert(addToChat);
+                else if (addToChat[0] === " ")
+                    alert("❤ Прошлой ночью дама выбрала именно тебя ❤");
                 console.log(data.id)
             });
         }

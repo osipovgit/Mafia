@@ -51,7 +51,7 @@ public class GameController {
         this.roomRepo = roomRepo;
     }
 
-    String[] stringRoles = {"mafia", "doctor", "civilian", "sheriff", "girl", "civilian", "civilian", "mafia", "mafia", "civilian"};
+    String[] stringRoles = {"mafia", "doctor", "civilian", "sheriff", "girl", "mafia", "civilian", "civilian", "mafia", "civilian"};
 
     @GetMapping("/create")
     public String createRoom(HttpServletRequest request, Model model) {
@@ -212,7 +212,7 @@ public class GameController {
         if (gameRoomsList.size() <= 1) { // TODO: change to < 5
             roomRepo.updateDate(roomNumber, dateNow.getTime());
             return 0L;
-        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 15000 & gameRoomsList.size() < 10 & gameRoomTop.getRole().equals("null")) {
+        } else if (dateNow.getTime() - gameRoomTop.getTimer() < 30000 & gameRoomsList.size() < 10 & gameRoomTop.getRole().equals("null")) {
             return (dateNow.getTime() - gameRoomTop.getTimer()) / 1000;
         } else {
             roomRepo.updatePhase(roomNumber, 1);
@@ -326,7 +326,7 @@ public class GameController {
                 case 1:
                     return "<" + yourChoice + ">";
                 case 2:
-                    if (!roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getGirlChoice()) {
+                    if (!roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getGirlChoice()) {
                         roomRepo.setVoiceOn(roomNumber,
                                 roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getVote() + 1,
                                 userRepo.findByUsernameOrId(yourChoice, null).getId());
@@ -334,7 +334,7 @@ public class GameController {
                         message.setRoomNumber(roomNumber);
                         message.setMessage("sys: " + userRepoById.getUsername() + ": votes for " + yourChoice);
                         messagesRepo.save(message);
-                    } else return "<" + yourChoice + ">";
+                    } else return " <" + yourChoice + ">";
                     break;
                 case 3:
                     switch (gameRooms.getRole()) {
@@ -361,16 +361,19 @@ public class GameController {
     public String gameMode(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         GameRooms gameRooms = roomRepo.findTopByNumber(roomNumber);
         if (gameRooms.getRole().equals("null")) {
-            if (gameRooms.getPhase() == 0)
+            roomRepo.updatePhase(roomNumber, 4);
+            if (gameRooms.getPhase() == 0 | gameRooms.getPhase() == 4)
                 return "";
             roomRepo.updateDate(roomNumber, new Date().getTime());
             List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
             Collections.shuffle(gameRoomsList);
             int indexRole = 0;
+            System.out.println("Set roles: ");
             for (GameRooms gameRoom : gameRoomsList) {
-                roomRepo.setRoles(roomNumber, (String) stringRoles[indexRole++], gameRoom.getUserId());
+                roomRepo.setRoles(roomNumber, stringRoles[indexRole++], gameRoom.getUserId());
+                System.out.println(gameRoom.getUserId() + " " + gameRoom.getRole());
             }
-            System.out.println("Set roles");
+            roomRepo.updatePhase(roomNumber, 1);
         }
         Date dateNow = new Date();
         Cookie[] cookies = request.getCookies();
@@ -380,10 +383,11 @@ public class GameController {
                 break;
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
-        String string = "[{";
-        string += "\"role\":\"" + roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getRole().toUpperCase() + "\",\"phase\":" + gameRooms.getPhase();
+        String string = "";
+        string += "[{\"role\":\"" + roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getRole().toUpperCase() + "\",\"phase\":" + gameRooms.getPhase();
         switch (gameRooms.getPhase()) {
             case 0:
+                roomRepo.updatePhase(roomNumber, 4);
                 List<GameRooms> roomsOrderD = roomRepo.findAllByNumberOrderByVoteDesc(roomNumber);
                 int countMaf = 0;
                 messagesRepo.deleteAllByRoomNumber(roomNumber);
@@ -403,12 +407,15 @@ public class GameController {
                 roomRepo.setVoteZero(roomNumber, 0);
                 roomRepo.updateStage(roomNumber, true);
                 roomRepo.updateDate(roomNumber, new Date().getTime());
-                roomRepo.resetAll(roomNumber, false, false, false, 0);
+                roomRepo.resetAll(roomNumber, false, false, 0);
+                roomRepo.resetGirlChoice(roomNumber, false);
                 roomRepo.resetRoles(roomNumber, "null");
                 return "";
             case 1:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 20000) {
+                if (dateNow.getTime() - gameRooms.getTimer() >= 40000) {
+                    roomRepo.updatePhase(roomNumber, 4);
                     System.out.println("Phase 1");
+                    messagesRepo.deleteAllByRoomNumber(roomNumber);
                     if (gameRooms.getStageOne()) {
                         roomRepo.updatePhase(roomNumber, 3);
                         roomRepo.updateStage(roomNumber, false);
@@ -420,7 +427,8 @@ public class GameController {
                     string += ",\"timer\":\"0" + (1 - ((dateNow.getTime() - gameRooms.getTimer()) / 60000)) + ":" + ((((dateNow.getTime() - gameRooms.getTimer()) / 1000) % 60) > 50 ? "0" : "") + (60 - (((dateNow.getTime() - gameRooms.getTimer()) / 1000)) % 60) + " p: 1\"";
                 break;
             case 2:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 6000) {
+                if (dateNow.getTime() - gameRooms.getTimer() >= 40000) {
+                    roomRepo.updatePhase(roomNumber, 4);
                     System.out.println("Phase 2");
                     List<GameRooms> roomsOrderDesc = roomRepo.findAllByNumberOrderByVoteDesc(roomNumber);
                     int countMafia = 0, countOther = 0, maxVote = 0, countVote = 0;
@@ -452,21 +460,56 @@ public class GameController {
                         roomRepo.updateDate(roomNumber, new Date().getTime());
                         roomRepo.setDoneMoveFalse(roomNumber, false);
                         roomRepo.setVoteZero(roomNumber, 0);
+                        roomRepo.resetGirlChoice(roomNumber, false);
                         messagesRepo.deleteAllByRoomNumber(roomNumber);
                     }
                 }
                 string += ",\"timer\":\"00:" + (((dateNow.getTime() - gameRooms.getTimer()) / 1000) > 50 ? "0" : "") + (60 - ((dateNow.getTime() - gameRooms.getTimer()) / 1000)) + " p:2\"";
                 break;
             case 3:
-                if (dateNow.getTime() - gameRooms.getTimer() >= 12000) {
-                    System.out.println("Phase 3");
+                if (dateNow.getTime() - gameRooms.getTimer() >= 60000) {
+                    roomRepo.updatePhase(roomNumber, 4);
                     messagesRepo.deleteAllByRoomNumber(roomNumber);
-                    roomRepo.updatePhase(roomNumber, 1);
-                    Date date = new Date();
-                    roomRepo.updateDate(roomNumber, date.getTime());
-                    roomRepo.resetAll(roomNumber, false, false, false, 0);
+                    Messages messages = new Messages();
+                    messages.setRoomNumber(roomNumber);
+                    System.out.println("Phase 3");
+                    List<GameRooms> roomsOrderNight = roomRepo.findAllByNumberOrderByMafiaChoiceDesc(roomNumber);
+                    int maxVote = 0, countVote = 0;
+                    roomsOrderNight.removeIf(x -> x.getRole().equals("observer"));
+                    int countWithMafia = roomsOrderNight.size();
+                    roomsOrderNight.removeIf(x -> x.getRole().equals("mafia"));
+                    for (GameRooms gameRoom : roomsOrderNight) {
+                        System.out.println(gameRoom);
+                        maxVote = Math.max(gameRoom.getMafiaChoice(), maxVote);
+                        countVote = gameRoom.getMafiaChoice() == maxVote ? ++countVote : countVote;
+                    }
+                    System.out.println("mV:" + maxVote + " couV:" + countVote);
+                    countVote = (int) (random() * countVote);
+                    int obs = 0;
+                    for (GameRooms gameRoom : roomsOrderNight) {
+                        System.out.println("cV: " + countVote + " user: " + gameRoom.getUserId() + " role: " + gameRoom.getRole());
+                        if (countVote-- == 0) {
+                            if (!gameRoom.getDocChoice()) {
+                                roomRepo.setRoles(roomNumber, "observer", gameRoom.getUserId());
+                                messages.setMessage("Mafia kill " + userRepo.findByUsernameOrId(null, gameRoom.getUserId()).getUsername() + " :(");
+                                ++obs;
+                            } else messages.setMessage("Doctor save, keep calm :)");
+                            break;
+                        }
+                    }
+                    messagesRepo.save(messages);
+                    string += ",\"count\":\"Mafia: " + (countWithMafia - roomsOrderNight.size()) + " | Civilian: " + (roomsOrderNight.size() - obs) + "\"";
+                    if (roomsOrderNight.size() == 0) {
+                        roomRepo.updatePhase(roomNumber, 0);
+                    } else {
+                        roomRepo.updatePhase(roomNumber, 1);
+                        roomRepo.updateDate(roomNumber, new Date().getTime());
+                        roomRepo.resetAll(roomNumber, false, false, 0);
+                    }
                 }
                 string += ",\"timer\":\"0" + (1 - ((dateNow.getTime() - gameRooms.getTimer()) / 60000)) + ":" + ((((dateNow.getTime() - gameRooms.getTimer()) / 1000) % 60) > 50 ? "0" : "") + (60 - (((dateNow.getTime() - gameRooms.getTimer()) / 1000)) % 60) + " p:3\"";
+                break;
+            case 4:
                 break;
         }
 //        System.out.println(string + "}]");

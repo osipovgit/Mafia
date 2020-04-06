@@ -16,6 +16,8 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     List<GameRooms> findAllByNumberOrderByVoteDesc(Long number);
 
+    List<GameRooms> findAllByNumberOrderByMafiaChoiceDesc(Long number);
+
     GameRooms findByNumberAndUserId(Long number, Long userId);
 
     @Override
@@ -80,6 +82,11 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     @Modifying
     @Transactional
+    @Query(nativeQuery = true, value = "update rooms set girl_choice = :girl_choice where number =:number")
+    void resetGirlChoice(@Param("number") Long number, @Param("girl_choice") Boolean girl_choice);
+
+    @Modifying
+    @Transactional
     @Query(nativeQuery = true, value = "update rooms set doc_choice = :doc_choice where number =:number and user_id =:user_id")
     void setDoctorChoiceOn(@Param("number") Long number, @Param("doc_choice") Boolean doc_choice, @Param("user_id") Long user_id);
 
@@ -95,6 +102,6 @@ public interface RoomRepo extends JpaRepository<GameRooms, Long> {
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "update rooms set done_move = :done_move, girl_choice = :girl_choice, doc_choice = :doc_choice, mafia_choice = :mafia_choice  where number =:number")
-    void resetAll(@Param("number") Long number, @Param("done_move") Boolean done_move, @Param("girl_choice") Boolean girl_choice, @Param("doc_choice") Boolean doc_choice, @Param("mafia_choice") Integer mafia_choice);
+    @Query(nativeQuery = true, value = "update rooms set done_move = :done_move, doc_choice = :doc_choice, mafia_choice = :mafia_choice  where number =:number")
+    void resetAll(@Param("number") Long number, @Param("done_move") Boolean done_move, @Param("doc_choice") Boolean doc_choice, @Param("mafia_choice") Integer mafia_choice);
 }
