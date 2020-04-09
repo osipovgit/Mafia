@@ -14,15 +14,25 @@ import javax.servlet.ServletRequest;
 import javax.sql.DataSource;
 
 
+/**
+ * Класс конфигурации Web security config.
+ */
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
-
+    /**
+     * Поле подключения PasswordEncoder, для храниения и сравнения паролей в неявном виде (кодировка BCrypt).
+     */
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Создание бина кодировщика пароля (кодировка BCrypt).
+     *
+     * @return the password encoder
+     */
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder(8);
@@ -36,7 +46,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                    .antMatchers("/authorization", "/signup").anonymous()
                 .anyRequest().permitAll()
                 .mvcMatchers("/playrooms").permitAll()
-                .requestMatchers(ServletRequest::isAsyncSupported, ServletRequest::isSecure, ServletRequest::isAsyncStarted).permitAll()
                 .and()
                 .formLogin()
                 .loginPage("/authorization")

@@ -8,14 +8,19 @@ import ru.eltex.entity.RoomsInfo;
 
 import java.util.List;
 
+/**
+ * Интерфейс Rooms info repository.
+ */
 public interface RoomsInfoRepo extends JpaRepository<RoomsInfo, Long> {
 
     @Override
     List<RoomsInfo> findAll();
 
+    /**
+     * Find by number rooms info.
+     *
+     * @param number the number
+     * @return the rooms info
+     */
     RoomsInfo findByNumber(@Param("number") Long number);
-
-    @Modifying
-    @Transactional
-    void deleteAllByNumber(@Param("number") Long number);
 }

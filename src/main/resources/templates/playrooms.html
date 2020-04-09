@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <head>
@@ -76,11 +76,15 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-                <a class="nav-link" href="#" style="color: white">Домик <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="http://localhost:8081/home" style="color: white">Домик <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link" href="http://www.printplay.ru/kartochnaya-igra-mafiya-karty/" style="color: white">Правила
                     (да-да, они есть) <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" style="color: white" th:text="'Пользователь: ' + ${user.username}"><span
+                        class="sr-only">(current)</span></a>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
@@ -89,13 +93,30 @@
         </form>
     </div>
 </nav>
-<div style="width: 30vw; position: absolute; top: 3vh;">
-    <h1 h1-expand-lg th:inline="text" style="font-size: 2vw; font-family: revert; margin-top: 12vh; margin-left: 2vw">
-        Список райончиков:</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-7" style="margin-left: 0vw">
+            <div style="width: 30vw; position: absolute; top: 3vh;">
+                <h1 h1-expand-lg th:inline="text"
+                    style="font-size: 2vw; font-family: revert">
+                    Список райончиков:</h1>
+            </div>
+            <div class="border border-danger"
+                 style="margin-top: 9vh; width: 25vw; height: 70vh; overflow: auto"
+                 id="roomsList"></div>
+            <br>
+        </div>
+        <div class="col-5" style="margin-top: 2vh">
+            <button class="btn btn-danger" type="submit"
+                    style="height: 20vh; width: 20vw; font-family: revert; font-size: 5vh" onclick="create()">СОЗДАТЬ
+                КОМНАТУ
+            </button>
+            <button class="btn btn" type="submit"
+                    style="background-color: darkorange; margin-top: 2vh; height: 20vh; width: 20vw; font-family: revert; font-size: 5vh"
+                    onclick="">СОЗДАТЬ КОМНАТУ
+            </button>
+        </div>
+    </div>
 </div>
-<div class="border border-danger" style="margin-top: 15vh; margin-left: 2vw; width: 20vw; height: 70vh; overflow: auto"
-     id="roomsList"></div>
-<br>
-<button class="btn btn-danger" type="submit" style="margin-left: 7.5vw" onclick="create()">Создать комнату</button>
 </body>
 </html>

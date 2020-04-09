@@ -9,13 +9,24 @@ import ru.eltex.entity.Messages;
 
 import java.util.List;
 
+/**
+ * Интерфейс Messages repository.
+ */
 public interface MessagesRepo extends JpaRepository<Messages, Long> {
 
+    /**
+     * Find all by room number order by id list.
+     *
+     * @param roomNumber the room number
+     * @return the list
+     */
     List<Messages> findAllByRoomNumberOrderById(Long roomNumber);
 
-    Messages findByRoomNumberAndMessage(Long roomNumber, String message);
-
-
+    /**
+     * Delete all by room number.
+     *
+     * @param roomNumber the room number
+     */
     @Modifying
     @Transactional
     void deleteAllByRoomNumber(@Param("roomNumber") Long roomNumber);

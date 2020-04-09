@@ -45,8 +45,6 @@
                     var fragmentInfo = document.createDocumentFragment();
                     var elementRole = document.getElementById('roleInfo');
                     var fragmentRole = document.createDocumentFragment();
-                    var elementCount = document.getElementById('countPlayers');
-                    var fragmentCount = document.createDocumentFragment();
                     var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
                         if (key === "timer") {
                             var messageElementInfo = document.createElement('a');
@@ -55,20 +53,12 @@
                         } else if (key === "role") {
                             var messageElementRole = document.createElement('a');
                             messageElementRole.style = "font-size: 5vh; font-family: revert";
-
                             messageElementRole.textContent = value;
                             fragmentRole.appendChild(messageElementRole);
-                        } else if (key === "count") {
-                            $("#countPlayers").empty();
-                            var messageCount = document.createElement('a');
-                            messageCount.textContent = value;
-                            fragmentCount.appendChild(messageCount);
                         }
-
                     });
                     elementInfo.appendChild(fragmentInfo);
                     elementRole.appendChild(fragmentRole);
-                    elementCount.appendChild(fragmentCount);
                 }
             });
         }
@@ -89,7 +79,7 @@
             $.get(location.href + '/start').then(function (data) {
                 console.log("st Check");
                 if (data !== -2 && data !== -3 && data !== 0)
-                    $("#info").html("Время до начала: " + (60 - data));
+                    $("#info").html("Время до начала: " + data);
                 else if (data === 0) {
                     $("#info").html("Регистрация...");
                     } else if (data === -3) {
@@ -115,8 +105,8 @@
         function sendMessage() {
             $.get(location.href + '/chat/' + document.getElementById("textMessage").value).then(function (jsonGameRooms) {
                 $('#chat').empty();
-                if (jsonGameRooms !== "") {
-                    document.getElementById("textMessage").value = "";
+                document.getElementById("textMessage").value = "";
+                if (jsonGameRooms !== "" && jsonGameRooms !== "nope") {
                     var element = document.getElementById('chat');
                     var fragment = document.createDocumentFragment();
                     var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
@@ -129,12 +119,12 @@
                         }
                     });
                     element.appendChild(fragment);
-                } else {
-                    document.getElementById("textMessage").value = "";
+                } else if (jsonGameRooms === "") {
                     alert("🔫 Ночью в чате общается только мафия 🔫‍");
+                } else {
+                    alert("╋ Пожалуй, в следующей жизни ╋‍");
                 }
             });
-
         }
 
         function chatUpdate() {
@@ -228,6 +218,9 @@
                 <a class="nav-link" href="http://www.printplay.ru/kartochnaya-igra-mafiya-karty/" style="color: white">Правила
                     (да-да, они есть) <span class="sr-only">(current)</span></a>
             </li>
+            <!--            <li class="nav-item active">-->
+            <!--                <a class="nav-link" style="color: white" th:text="'Пользователь: ' + ${user.username}"><span class="sr-only">(current)</span></a>-->
+            <!--            </li>-->
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
@@ -257,7 +250,6 @@
             <div>
                 <div style="width: 40vw; height: 80vh">
                     <div class="border border-success" style="height: 30vh; width: 35vw" id="roleInfo"></div>
-                    <div class="border border-success" style="height: 30vh; width: 35vw" id="countPlayers"></div>
                     <div class="border border-success" style="width: 35vw; height: 38vh" id="usersList"></div>
                 </div>
                 <div style="display: inline-flex; margin-top: -7vh">

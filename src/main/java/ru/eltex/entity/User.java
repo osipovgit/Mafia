@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.persistence.*;
 
 /**
- * Класс представления пользователя
+ * Класс представления пользователя.
  *
  * @author Evgesha
  * @version v1.0
@@ -16,33 +16,25 @@ import javax.persistence.*;
 @Table(name = "user")
 public class User {
     /**
-     * Поле идентификатора
+     * Поле идентификатора.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     /**
-     * Поле имя
+     * Поле имя.
      */
     private String username;
     /**
-     * Поле пароля
+     * Поле пароля.
      */
     private String password;
     /**
-     * Поле количество игр
+     * Поле количество игр. Для подведения статистики по итогам игр. [В разработке]
      */
     private Long countGame;
     /**
-     * Поле количество игр
+     * Поле режим игры. Для добавления различных игровых режимов. [В разработке]
      */
     private Integer gameMode;
-
-    public User() {
-    }
-
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
 }

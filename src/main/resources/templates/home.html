@@ -33,8 +33,6 @@
     <input type="button" class="btn btn-warning rounded-circle"
            style="transform:rotate(-90deg); position: absolute; top: 23.7vw; left: 79.3vw; width:18.6vw; height:13.2vw; font-size: 5vw"
            value="Начать" onclick="document.location='/playrooms'">
-
-    <p th:text="'Hello, ' + ${user.username} + '!'"/>
 </div>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-dark">
@@ -62,7 +60,7 @@
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
+            <input class="form-control mr-sm-2" type="search" th:placeholder="'Здравствуй, ' + ${user.username} + '!'">
             <!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="">Не трожь, не понравится-->
             <!--            </button>-->
         </form>
