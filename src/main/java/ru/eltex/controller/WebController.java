@@ -1,5 +1,6 @@
 package ru.eltex.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import ru.eltex.repos.UserRepo;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Класс-контроллер для отображения страниц.
@@ -21,6 +23,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 public class WebController {
+    /**
+     * Поле объявления переменной для логгирования
+     */
+    private static final Logger log = Logger.getLogger(WebController.class.getName());
     /**
      * Поле подключения репозитория для взамимодействия пользвателя с БД.
      */
@@ -35,11 +41,14 @@ public class WebController {
     /**
      * Отображение первой страницы.
      *
-     * @param model to view page
+     * @param model    to view page
+     * @param response to add Cookie
      * @return view hello.html
      */
     @RequestMapping("/")
-    public String helloView(Model model) {
+    public String helloView(Model model, HttpServletResponse response) {
+//        Cookie cookie = new Cookie("mode", "0");
+//        response.addCookie(cookie);
         return "hello.html";
     }
 
@@ -129,7 +138,11 @@ public class WebController {
             User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
             userRepoById.setPassword(null);
             model.addAttribute("user", userRepoById);
+            log.info("User " + userRepoById.getUsername() + " join/create the room " + roomNumber + ".");
             return "letsPlay.html";
-        } else return "redirect:/playrooms";
+        } else {
+            log.error("User " + userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue())).getUsername() + " try join the room " + roomNumber + ".");
+            return "redirect:/playrooms";
+        }
     }
 }

@@ -1,5 +1,6 @@
 package ru.eltex.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,10 @@ import java.util.Map;
  */
 @Controller
 public class RegistrationController {
+    /**
+     * Поле объявления переменной для логгирования
+     */
+    private static final Logger log = Logger.getLogger(RegistrationController.class.getName());
     /**
      * Поле подключения PasswordEncoder, для храниения и сравнения паролей в неявном виде (кодировка BCrypt).
      */
@@ -49,8 +54,10 @@ public class RegistrationController {
     public String signIn(User user, Model model, HttpServletResponse response) {
         User userRepoByUsername = userRepo.findByUsernameOrId(user.getUsername(), null);
         if (userRepoByUsername == null || !passwordEncoder.matches(user.getPassword(), userRepoByUsername.getPassword())) {
+            log.error("Wrong username or password.");
             return "/authorization.html";
         }
+        log.info("User " + user.getUsername() + " authorized.");
         Cookie cookie = new Cookie("userId", userRepoByUsername.getId().toString());
         response.addCookie(cookie);
         return "redirect:/home";
@@ -80,11 +87,12 @@ public class RegistrationController {
     public String signUpNewUser(User user, Model model) {
         User userFromDb = userRepo.findByUsernameOrId(user.getUsername(), null);
         if (userFromDb != null) {
+            log.error("Username \"" + user.getUsername() + "\" already exist.");
             return "signup.html";
         }
+        log.info("User " + user.getUsername() + " is registered.");
         user.setCountGame(0L);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setGameMode(0);
         userRepo.save(user);
         return "redirect:/authorization";
     }
