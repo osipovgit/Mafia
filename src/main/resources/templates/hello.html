@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>lore</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <title>Hello!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
 </head>
 <body style="background-color: rgba(238,183,131,0.89)">
 <nav class="navbar navbar-expand-lg navbar-light bg-dark">
@@ -26,38 +29,64 @@
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
-<!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Не работает, но тыкни</button>-->
+            <!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Не работает, но тыкни</button>-->
         </form>
     </div>
 </nav>
-<div class="border border-top-1 border-right-0 border-left-0 border-bottom-1 border-danger" align="center"
-     style="width: 60vw; position: absolute; top: 10vw; left: 19vw; right: 50vw">
-    <br>
-    <p>"В начале игры каждый пользователь получает роль."</p>
-    <p> Всего в игре имеется 5 ролей:</p>
-    <ul>
-        <li>Мафия - неотъемлемый персонаж в игре. Каждый Мафиози знает игроков своей команды, в отличие от мирыных
-            жителей. Просыпаются ночью чтобы убить одного из мирных жителей.
-        </li>
-        <li>Доктор - мирный житель. Может спасти ночью от смерти одного из игроков, если его будут убивать этой ночью.
-            Когда наступает ночь он выбирает того, кого будет лечить.
-        </li>
-        <li>Шериф - мирный житель. Каждую ночь может исследовать другого игрока и узнать кто в игре Мафиози, а кто
-            мирный житель.
-        </li>
-        <li>Дама - мирный житель. Игрок, к которому пришла дама, не сможет голосовать на следующий день. Чары дамы
-            спадают только на следующую ночь.
-        </li>
-    </ul>
-    <br>
-    <p>Игровой процесс разделен на 3 фазы: День, Голосование, Ночь.</p>
-    <p>День - игроки общаются в чате, высказывая свое мнение(кого они считают мафией).</p>
-    <p>Голосование - каждый отдает свой голос за игрока, которого считает мафией.</p>
-    <p>Ночь - все роли кроме мирного совершают свое уникальное действие.</p>
-    <br>
-    <p>Побеждает команда, которой удалось уничтожить всех из команды противника.</p>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="border border-top-1 border-right-0 border-left-0 border-bottom-1 border-danger"
+                 style="overflow: auto; height: 78vh; width: 70vw; font-size: 1.1vw; margin-top: 4vh">
+                <br>
+                <p>В начале игры каждый пользователь получает роль.</p>
+                <p> Всего в игре имеется 5 ролей:</p>
+                <ul>
+                    <li>Мафия - неотъемлемый персонаж в игре. Каждый Мафиози знает игроков своей команды, в отличие от
+                        мирыных
+                        жителей. Просыпаются ночью чтобы убить одного из мирных жителей. Могут обсудить свой выбор в
+                        чате, который на время "ночи" полностью в их распоряжении.
+                    </li>
+                    <li>Доктор - мирный житель. Может спасти ночью от смерти одного из игроков, если на него пал выбор
+                        мафии.
+                        Когда наступает ночь он выбирает того, кого будет лечить.
+                    </li>
+                    <li>Шериф - мирный житель. Каждую ночь может исследовать другого игрока и узнать кто в игре Мафиози,
+                        а
+                        кто
+                        мирный житель.
+                    </li>
+                    <li>Дама - мирный житель. Игрок, к которому пришла дама, не сможет голосовать на следующий день.
+                        Чары
+                        дамы
+                        спадают только на следующую ночь.
+                    </li>
+                    <li>Мирный - мирный житель. У мирных жителей задача выявить игроков мафии. Они не имеют никаких
+                        специальных
+                        способностей.
+                    </li>
+                </ul>
+                <p>Игровой процесс разделен на 3 фазы: День, Голосование, Ночь.</p>
+                <p>День - игроки общаются в чате, высказывая свое мнение (кого они считают мафией).</p>
+                <p>Голосование - каждый отдает свой голос за одного из игроков, которого считает мафией. Самый
+                    подозрительный житель,
+                    набравший большее число голосов - погибает. В случае если голоса разделились поровну жертва
+                    выбирается случайным образом.</p>
+                <p>Ночь - все роли, кроме "мирного", совершают свое уникальное действие.</p>
+                <p>Побеждает команда, которой удалось уничтожить всех игроков из команды противника.</p>
+                <a>Если убиты все Мирные жители - побеждает Мафия.</a> <br> <a>Соответственно, в случае гибели всех
+                Мафиози - побеждают Мирные жители.</a>
+            </div>
+        </div>
+
+
+        <div class="col-lg-3">
+            <button class="btn btn-warning rounded border-danger"
+                    style="width: 19vw; font-size: 2vw; margin-top: 15vh" onclick="location.href='/authorization'">Я
+                принимаю условия пользовательского соглашения и согласен на обработку персональных данных
+            </button>
+        </div>
+    </div>
 </div>
-<input type="button" class="btn btn-warning rounded-circle" value="Начать игру"
-       style="position: absolute; top: 40vw; left: 45vw; right: 50vw" onclick="location.href='/authorization'">
 </body>
 </html>

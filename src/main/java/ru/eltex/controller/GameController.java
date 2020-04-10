@@ -499,6 +499,7 @@ public class GameController {
                             break;
                         case "sheriff":
                             log.info("User " + userRepoById.getUsername() + " checked player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: SHERIFF.");
+                            roomRepo.setDoneMoveReverse(roomNumber, true, userRepoById.getId());
                             return (roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getRole().equals("mafia") ? "You found the mafia!" : "You have not found the mafia!");
                         case "girl":
                             log.info("User " + userRepoById.getUsername() + " cast a vote for player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: GIRL.");
