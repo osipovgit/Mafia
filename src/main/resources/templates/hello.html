@@ -30,11 +30,34 @@
         </form>
     </div>
 </nav>
-<div class="border border-top-1 border-right-0 border-left-0 border-bottom-1 border-danger" align="center" style="width: 60vw; position: absolute; top: 10vw; left: 19vw; right: 50vw">
+<div class="border border-top-1 border-right-0 border-left-0 border-bottom-1 border-danger" align="center"
+     style="width: 60vw; position: absolute; top: 10vw; left: 19vw; right: 50vw">
     <br>
-        <p>"Пум-пурум-парам-пам-пам"</p>
+    <p>"В начале игры каждый пользователь получает роль."</p>
+    <p> Всего в игре имеется 5 ролей:</p>
+    <ul>
+        <li>Мафия - неотъемлемый персонаж в игре. Каждый Мафиози знает игроков своей команды, в отличие от мирыных
+            жителей. Просыпаются ночью чтобы убить одного из мирных жителей.
+        </li>
+        <li>Доктор - мирный житель. Может спасти ночью от смерти одного из игроков, если его будут убивать этой ночью.
+            Когда наступает ночь он выбирает того, кого будет лечить.
+        </li>
+        <li>Шериф - мирный житель. Каждую ночь может исследовать другого игрока и узнать кто в игре Мафиози, а кто
+            мирный житель.
+        </li>
+        <li>Дама - мирный житель. Игрок, к которому пришла дама, не сможет голосовать на следующий день. Чары дамы
+            спадают только на следующую ночь.
+        </li>
+    </ul>
     <br>
+    <p>Игровой процесс разделен на 3 фазы: День, Голосование, Ночь.</p>
+    <p>День - игроки общаются в чате, высказывая свое мнение(кого они считают мафией).</p>
+    <p>Голосование - каждый отдает свой голос за игрока, которого считает мафией.</p>
+    <p>Ночь - все роли кроме мирного совершают свое уникальное действие.</p>
+    <br>
+    <p>Побеждает команда, которой удалось уничтожить всех из команды противника.</p>
 </div>
-<input type="button" class="btn btn-warning rounded-circle" value="Нам скоро 20, а у нас вот это" style="position: absolute; top: 40vw; left: 49vw; right: 50vw" onclick="location.href='/authorization'">
+<input type="button" class="btn btn-warning rounded-circle" value="Начать игру"
+       style="position: absolute; top: 40vw; left: 45vw; right: 50vw" onclick="location.href='/authorization'">
 </body>
 </html>
