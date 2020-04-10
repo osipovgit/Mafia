@@ -14,8 +14,8 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 
 bootJar {
-    baseName = 'spring-rest-service'
-    version =  '0.1.0'
+    baseName = 'mafia-online'
+    version =  '1.0'
 }
 
 repositories {
