@@ -10,6 +10,26 @@
   <img src="https://camo.githubusercontent.com/e8293376c6ea1d2181eb2fa6f878acd806cf0114/68747470733a2f2f64317136663061656c7830706f722e636c6f756466726f6e742e6e65742f70726f647563742d6c6f676f732f36343464326631352d633564622d343733312d613335332d6163653632333538343166612d72656769737472792e706e67">
 </a>
   </p>
+<p>
 <a>
   <img src="https://www.websparrow.org/wp-content/uploads/2019/08/spring.png">
 </a>
+</p>
+
+<h1>Данный проект является web-приложением. Он представляет из себя игру "Мафия", расчитанную на 5-10 игроков в одной комнате. Проект создан с использованием технологий: Spring Framework, Gradle, MySQL, Docker.<h1>
+<h2>Сборка программы</h2>
+  <pre><code>gradle build</code></pre>
+<h2>Создание .jar файла</h2>
+  <pre><code>gradle bootJar</code></pre>
+<h2>Запуск программы</h2>
+  <pre><code>gradle bootRun</code></pre>
+<h2>Запуск программы из Docker-а</h2>
+  <pre><code>- docker build -t mafia .
+- docker run -p PORT:PORT mafia </code></pre>
+<h2>Удалить все образы можно с помощью:</h2>
+  <pre><code>- chmod +x dockerRm.sh
+- sh dockerRm.sh</code></pre>
+<h2>Команда проекта:</h2>
+  <ul>
+    <li> Evgenii Osipov | https://github.com/osipovgit</li>
+    <li> Maxim Dovydenko | https://github.com/MaksimDov</li>
