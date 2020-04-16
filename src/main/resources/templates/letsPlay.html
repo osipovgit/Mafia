@@ -159,19 +159,19 @@
                 var fragment = document.createDocumentFragment();
                 var classString = "";
                 var objGameRoom = JSON.parse(jsonGameRooms, function (key, value) {
-                    if (key === "password") {
-                        classString = value;
-                    }
                     if (key === "username") {
+                        classString = value;
+
+                    }
+                    if (key === "password") {
                         var buttonElement = document.createElement('button');
                         buttonElement.type = "submit";
-                        buttonElement.className = classString;
-                        buttonElement.id = value;
+                        buttonElement.className = value;
+                        buttonElement.id = classString;
                         buttonElement.onclick = function () {
                             clickHim(this);
                         };
-                        // console.log(jsonGameRooms.password);
-                        buttonElement.textContent = value;
+                        buttonElement.textContent = classString;
                         fragment.appendChild(buttonElement);
                         // var brb = document.createElement('br');
                         // fragment.appendChild(brb);
@@ -255,7 +255,8 @@
             <div>
                 <div style="width: 40vw; height: 80vh">
                     <div class="border border-success" style="height: 30vh; width: 35vw" id="roleInfo"></div>
-                    <div class="border border-success" style="width: 35vw; height: 38vh" id="usersList"></div>
+                    <div class="border border-success" style="overflow: auto; width: 35vw; height: 38vh"
+                         id="usersList"></div>
                 </div>
                 <div style="display: inline-flex; margin-top: -7vh">
                     <button class="btn" type="submit" style="background-color: darkorange; color: white"

@@ -427,7 +427,7 @@ public class GameController {
         List<User> users = new ArrayList<>();
         for (GameRooms room : rooms) {
             User user = userRepo.findByUsernameOrId(null, room.getUserId());
-            user.setPassword(room.getRole().equals("observer") ? "btn btn-danger" : "btn");
+            user.setPassword(room.getRole().equals("observer") ? "btn btn-danger" : "btn btn-success");
             users.add(user);
         }
         ObjectMapper mapper = new ObjectMapper();
