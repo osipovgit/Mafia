@@ -7,7 +7,7 @@
 
 docker pull mysql:5.6
 
-docker run --name mysql-standalone4 -e MYSQL_ROOT_PASSWORD=1111 -e MYSQL_DATABASE=mafia -e MYSQL_USER=root -e MYSQL_PASSWORD=1111 -d mysql:5.6
+docker run --name mysql-standalone4 -e MYSQL_ROOT_PASSWORD=1111 -e MYSQL_DATABASE=mafia -e MYSQL_USER=mafia -e MYSQL_PASSWORD=1111 -d mysql:5.6
 
 docker build . -t mafia-online-1.0
 
