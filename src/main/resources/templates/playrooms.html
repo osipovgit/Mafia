@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<head>
+    <meta charset="UTF-8">
+    <title>Mafia</title>
+    <!--    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        function create() {
+            $.get('/playrooms/create').then(function (data) {
+                document.location = data
+            });
+        }
+
+        function clickRoom(data) {
+            $.get(location.href + "/" + data.id + '/joinPlayer').then(function (dataRoom) {
+                if (dataRoom[0] === "T")
+                    alert(dataRoom);
+                else
+                    document.location = dataRoom;
+            });
+        }
+
+        function viewRooms() {
+            $.get('/playrooms/update').then(function (roomsView) {
+                if (roomsView !== "") {
+                    $('#roomsList').empty();
+                    var element = document.getElementById('roomsList');
+                    var fragment = document.createDocumentFragment();
+                    var setId;
+                    var objGameRoom = JSON.parse(roomsView, function (key, value) {
+                        if (key === "number")
+                            setId = value;
+                        if (key === "info") {
+                            var buttonElement = document.createElement('button');
+                            buttonElement.className = "btn";
+                            buttonElement.type = "submit";
+                            buttonElement.id = setId;
+                            buttonElement.onclick = function () {
+                                clickRoom(this);
+                            };
+                            buttonElement.textContent = value;
+                            fragment.appendChild(buttonElement);
+                            var brb = document.createElement('br');
+                            fragment.appendChild(brb);
+                            var brbr = document.createElement('br');
+                            fragment.appendChild(brbr);
+                        }
+                    });
+
+                    element.appendChild(fragment);
+                }
+            });
+        }
+
+        function viewRoomsPerSec() {
+            setInterval(viewRooms, 5000);
+        }
+
+        $(document).ready(function () {
+            viewRooms();
+            viewRoomsPerSec();
+        })
+    </script>
+</head>
+<body style="background-color: rgba(238,183,131,0.89)">
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand" href="#" style="color: white">Мафия</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+            aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="http://91.196.245.199:3647/home" style="color: white">Домик <span
+                        class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="http://www.printplay.ru/kartochnaya-igra-mafiya-karty/" style="color: white">Правила
+                    (да-да, они есть) <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" style="color: white" th:text="'Пользователь: ' + ${user.username}"><span
+                        class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
+            <!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Не работает, но тыкни</button>-->
+        </form>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-7" style="margin-left: 0vw">
+            <div style="width: 30vw; position: absolute; top: 3vh;">
+                <h1 h1-expand-lg th:inline="text"
+                    style="font-size: 2vw; font-family: revert">
+                    Список райончиков:</h1>
+            </div>
+            <div class="border border-danger"
+                 style="margin-top: 9vh; width: 25vw; height: 70vh; overflow: auto"
+                 id="roomsList"></div>
+            <br>
+        </div>
+        <div class="col-5" style="margin-top: 2vh">
+            <button class="btn btn-danger" type="submit"
+                    style="height: 20vh; width: 20vw; font-family: revert; font-size: 5vh" onclick="create()">СОЗДАТЬ
+                КОМНАТУ
+            </button>
+            <!--            <button class="btn btn" type="submit"-->
+            <!--                    style="background-color: darkorange; margin-top: 2vh; height: 20vh; width: 20vw; font-family: revert; font-size: 5vh"-->
+            <!--                    onclick="">СОЗДАТЬ КОМНАТУ-->
+            <!--            </button>-->
+        </div>
+    </div>
+</div>
+</body>
+</html>

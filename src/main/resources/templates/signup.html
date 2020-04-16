@@ -5,7 +5,7 @@
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <head>
     <meta charset="UTF-8">
-    <title>Sign in</title>
+    <title>Sign up</title>
 </head>
 
 <!--<script type="text/javascript">-->
@@ -53,10 +53,10 @@
 </nav>
 <div style="width: 50vw; position: absolute; top: 3vh;">
     <h1 h1-expand-lg th:inline="text"
-        style="font-size: 5vw; font-family: revert; margin-top: 15vh; margin-left: 35.7vw">Авторизация</h1>
+        style="font-size: 5vw; font-family: revert; margin-top: 15vh; margin-left: 36.3vw">Регистрация</h1>
 </div>
 <div style="width: 20vw; height: 20vw; position: absolute; top: 17vw; left: 40vw; right: 50vw">
-    <form th:action="@{/}" method="post">
+    <form th:action="@{/signup}" method="post">
         <div class="form-group">
             <label>login</label>
             <input type="text" class="form-control" name="username" placeholder="Имя любимое моё">
@@ -66,8 +66,7 @@
             <input type="password" class="form-control" name="password" placeholder="Пароль">
         </div>
         <button type="submit" class="btn btn-primary">Кнопочка</button>
-<!--        <input type="submit" class="btn btn-primary" value="Кнопочка" onclick="document.location='home'">-->
-        <input type="button" class="btn btn-primary" value="Регистрация" onclick="document.location='/signup'">
+        <input type="button" class="btn btn-primary" value="Авторизация" onclick="document.location='/authorization'">
     </form>
 </div>
 </body>

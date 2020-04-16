@@ -14,8 +14,8 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 
 bootJar {
-    baseName = 'spring-rest-service'
-    version =  '0.1.0'
+    baseName = 'mafia-online'
+    version =  '1.0'
 }
 
 repositories {
@@ -26,12 +26,17 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+    compile 'mysql:mysql-connector-java:8.0.17'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    compile 'mysql:mysql-connector-java:8.0.17'
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile ("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile ("org.springframework:spring-beans")
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
     compileOnly 'org.projectlombok:lombok:1.18.10'
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
-    implementation 'org.hibernate:hibernate-core:5.4.3.Final'
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile("org.assertj:assertj-core:3.11.1")
+    implementation 'org.testng:testng:6.9.6'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
