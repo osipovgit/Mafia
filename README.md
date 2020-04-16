@@ -18,17 +18,17 @@
 
 <h1>Данный проект является web-приложением. Он представляет из себя игру "Мафия", расчитанную на 5-10 игроков в одной комнате. Проект создан с использованием технологий: Spring Framework, Gradle, MySQL, Docker.<h1>
 <h2>Сборка программы</h2>
-  <pre><code>gradle build</code></pre>
+  <pre><code>$ gradle build</code></pre>
 <h2>Создание .jar файла</h2>
-  <pre><code>gradle bootJar</code></pre>
+  <pre><code>$ gradle bootJar</code></pre>
 <h2>Запуск программы</h2>
-  <pre><code>gradle bootRun</code></pre>
+  <pre><code>$ gradle bootRun</code></pre>
 <h2>Запуск программы из Docker-а</h2>
-  <pre><code>- docker build -t mafia .
-- docker run -p PORT:PORT mafia </code></pre>
+  <pre><code>$ docker build -t mafia .
+$ docker run -p PORT:PORT mafia </code></pre>
 <h2>Удалить все образы можно с помощью:</h2>
-  <pre><code>- chmod +x dockerRm.sh
-- sh dockerRm.sh</code></pre>
+  <pre><code>$ chmod +x dockerRm.sh
+$ sh dockerRm.sh</code></pre>
 <h2>Команда проекта:</h2>
   <ul>
     <li> Evgenii Osipov | https://github.com/osipovgit</li>
