@@ -15,8 +15,6 @@
             crossorigin="anonymous"></script>
 </head>
 <body style="background-color: rgba(238,183,131,0.89);">
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>
@@ -28,8 +26,7 @@
         crossorigin="anonymous"></script>
 
 <div style="width: 100vw; position: absolute; top: 3vh;">
-    <h1 h1-expand-lg th:inline="text" style="font-size: 45vw; font-family: revert; margin-top: -3vh">Hello
-        <!--[[${#httpServletRequest.remoteUser}]]--></h1>
+    <h1 h1-expand-lg th:inline="text" style="font-size: 45vw; font-family: revert; margin-top: -3vh">Hello</h1>
     <input type="button" class="btn btn-warning rounded-circle"
            style="transform:rotate(-90deg); position: absolute; top: 23.7vw; left: 79.3vw; width:18.6vw; height:13.2vw; font-size: 5vw"
            value="Начать" onclick="document.location='/playrooms'">
@@ -61,14 +58,8 @@
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" th:placeholder="'Здравствуй, ' + ${user.username} + '!'">
-            <!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="">Не трожь, не понравится-->
-            <!--            </button>-->
         </form>
     </div>
 </nav>
-
-<!--<form th:action="@{/logout}" method="post">-->
-<!--    <input type="submit" value="Sign Out"/>-->
-<!--</form>-->
 </body>
 </html>

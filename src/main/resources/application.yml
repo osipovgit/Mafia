@@ -1,13 +1,21 @@
 server:
-  port: 8081
+  port: SERVER_PORT
 spring:
   thymeleaf:
     prefix: file:src/main/resources/templates/
     cache: false
   datasource:
-    url: jdbc:mysql://localhost:3306/mafia?useUnicode=yes&characterEncoding=UTF-8
-    username: root
-    password: 1236
+    url: jdbc:mysql://HOST:PORT/MYSQL_DB_NAME?useUnicode=yes&characterEncoding=UTF-8
+    username: MYSQL_LOGIN
+    password: MYSQL_PASS
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: false
+  resources:
+    static-locations: [ classpath:/resources/, classpath:/static/ ]
+    chain:
+      strategy:
+        content:
+          paths: /**
+          enabled: true

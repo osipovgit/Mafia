@@ -5,65 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Mafia</title>
-    <!--    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script type="text/javascript">
-        function create() {
-            $.get('/playrooms/create').then(function (data) {
-                document.location = data
-            });
-        }
-
-        function clickRoom(data) {
-            $.get(location.href + "/" + data.id + '/joinPlayer').then(function (dataRoom) {
-                if (dataRoom[0] === "T")
-                    alert(dataRoom);
-                else
-                    document.location = dataRoom;
-            });
-        }
-
-        function viewRooms() {
-            $.get('/playrooms/update').then(function (roomsView) {
-                if (roomsView !== "") {
-                    $('#roomsList').empty();
-                    var element = document.getElementById('roomsList');
-                    var fragment = document.createDocumentFragment();
-                    var setId;
-                    var objGameRoom = JSON.parse(roomsView, function (key, value) {
-                        if (key === "number")
-                            setId = value;
-                        if (key === "info") {
-                            var buttonElement = document.createElement('button');
-                            buttonElement.className = "btn";
-                            buttonElement.type = "submit";
-                            buttonElement.id = setId;
-                            buttonElement.onclick = function () {
-                                clickRoom(this);
-                            };
-                            buttonElement.textContent = value;
-                            fragment.appendChild(buttonElement);
-                            var brb = document.createElement('br');
-                            fragment.appendChild(brb);
-                            var brbr = document.createElement('br');
-                            fragment.appendChild(brbr);
-                        }
-                    });
-
-                    element.appendChild(fragment);
-                }
-            });
-        }
-
-        function viewRoomsPerSec() {
-            setInterval(viewRooms, 5000);
-        }
-
-        $(document).ready(function () {
-            viewRooms();
-            viewRoomsPerSec();
-        })
-    </script>
+    <script type="text/javascript" src="/js/playrooms.js"></script>
 </head>
 <body style="background-color: rgba(238,183,131,0.89)">
 <nav class="navbar navbar-expand-lg navbar-light bg-dark">
@@ -90,7 +33,6 @@
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Я для красоты ¯\_(ツ)_/¯">
-            <!--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Не работает, но тыкни</button>-->
         </form>
     </div>
 </nav>
@@ -112,10 +54,6 @@
                     style="height: 20vh; width: 20vw; font-family: revert; font-size: 5vh" onclick="create()">СОЗДАТЬ
                 КОМНАТУ
             </button>
-            <!--            <button class="btn btn" type="submit"-->
-            <!--                    style="background-color: darkorange; margin-top: 2vh; height: 20vh; width: 20vw; font-family: revert; font-size: 5vh"-->
-            <!--                    onclick="">СОЗДАТЬ КОМНАТУ-->
-            <!--            </button>-->
         </div>
     </div>
 </div>

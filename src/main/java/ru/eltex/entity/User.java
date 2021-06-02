@@ -8,7 +8,7 @@ import javax.persistence.*;
 /**
  * Класс представления пользователя.
  *
- * @author Evgesha
+ * @author @osipovgit
  * @version v1.0
  */
 @Data
