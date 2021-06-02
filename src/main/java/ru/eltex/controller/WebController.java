@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Класс-контроллер для отображения страниц.
  *
- * @author Evgesha
+ * @author @osipovgit
  * @version v1.0
  */
 @Controller
@@ -26,7 +26,7 @@ public class WebController {
     /**
      * Поле объявления переменной для логгирования
      */
-    private static final Logger log = Logger.getLogger(WebController.class.getName());
+    private static final Logger LOG = Logger.getLogger(WebController.class.getName());
     /**
      * Поле подключения репозитория для взамимодействия пользвателя с БД.
      */
@@ -47,8 +47,6 @@ public class WebController {
      */
     @RequestMapping("/")
     public String helloView(Model model, HttpServletResponse response) {
-//        Cookie cookie = new Cookie("mode", "0");
-//        response.addCookie(cookie);
         return "hello.html";
     }
 
@@ -138,10 +136,10 @@ public class WebController {
             User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
             userRepoById.setPassword(null);
             model.addAttribute("user", userRepoById);
-            log.info("User " + userRepoById.getUsername() + " join/create the room " + roomNumber + ".");
+            LOG.info("User " + userRepoById.getUsername() + " join/create the room " + roomNumber + ".");
             return "letsPlay.html";
         } else {
-            log.error("User " + userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue())).getUsername() + " try join the room " + roomNumber + ".");
+            LOG.error("User " + userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue())).getUsername() + " try join the room " + roomNumber + ".");
             return "redirect:/playrooms";
         }
     }

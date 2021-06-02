@@ -27,7 +27,7 @@ import static java.lang.Math.random;
  * присоединения к ним пользователей, их взаимодействие в чате и отображение списка доступных комнат.
  * Обращение к методам происходит через ajax-запросы.
  *
- * @author Evgesha
+ * @author @osipovgit
  * @version v1.0
  */
 @RestController
@@ -36,7 +36,7 @@ public class GameController {
     /**
      * Поле объявления переменной для логгирования
      */
-    private static final Logger log = Logger.getLogger(RegistrationController.class.getName());
+    private static final Logger LOG = Logger.getLogger(RegistrationController.class.getName());
     /**
      * Поле номер комнаты.
      */
@@ -69,7 +69,7 @@ public class GameController {
     /**
      * The String roles.
      */
-    String[] stringRoles = {"mafia", "doctor", "civilian", "sheriff", "girl", "mafia", "civilian", "civilian", "mafia", "civilian"};
+    private final String[] stringRoles = {"mafia", "doctor", "civilian", "sheriff", "girl", "mafia", "civilian", "civilian", "mafia", "civilian"};
 
     /**
      * Метод для создания комнаты.
@@ -103,7 +103,7 @@ public class GameController {
         gameRooms.setVote(0);
         gameRooms.setRole("null");
         roomRepo.save(gameRooms);
-        log.info("Created room: " + gameRooms.getNumber() + " | host: " + userRepoById.getUsername() + ".");
+        LOG.info("Created room: " + gameRooms.getNumber() + " | host: " + userRepoById.getUsername() + ".");
         return "/playrooms/" + gameRooms.getNumber();
     }
 
@@ -163,7 +163,6 @@ public class GameController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-//        System.out.println(jsonStr);
         return jsonStr;
     }
 
@@ -205,10 +204,10 @@ public class GameController {
             gameRooms.setVote(0);
             gameRooms.setRole("null");
             roomRepo.save(gameRooms);
-            log.info("User: " + userRepoById.getUsername() + " has joined the room: " + gameRooms.getNumber() + " | host: " + userRepo.findByUsernameOrId(null, roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getHostId()) + ".");
+            LOG.info("User: " + userRepoById.getUsername() + " has joined the room: " + gameRooms.getNumber() + " | host: " + userRepo.findByUsernameOrId(null, roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getHostId()) + ".");
             return "/playrooms/" + roomNumber;
         } else {
-            log.error("Room " + roomNumber + " room removed or crowded.");
+            LOG.error("Room " + roomNumber + " room removed or crowded.");
             return "/playrooms";
         }
     }
@@ -237,10 +236,10 @@ public class GameController {
         if (userRepoById.getId().equals(gameRooms.getHostId()) && gameRooms.getRole().equals("null")) {
             messagesRepo.deleteAllByRoomNumber(roomNumber);
             roomRepo.deleteAllByNumber(roomNumber);
-            log.info("Room " + roomNumber + " removed.");
+            LOG.info("Room " + roomNumber + " removed.");
             return "/playrooms";
         } else {
-            log.error("Room " + roomNumber + " not deleted: the user " + userRepoById.getUsername() + " is not a host (" + userRepo.findByUsernameOrId(null, gameRooms.getHostId()).getUsername() + ") or the game has already started.");
+            LOG.error("Room " + roomNumber + " not deleted: the user " + userRepoById.getUsername() + " is not a host (" + userRepo.findByUsernameOrId(null, gameRooms.getHostId()).getUsername() + ") or the game has already started.");
             return "/playrooms/" + roomNumber;
         }
     }
@@ -268,10 +267,10 @@ public class GameController {
         GameRooms gameRooms = roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId());
         if (userRepoById.getId().equals(gameRooms.getUserId()) && gameRooms.getRole().equals("null")) {
             roomRepo.deleteByNumberAndUserId(roomNumber, userRepoById.getId());
-            log.info("User " + userRepoById.getUsername() + " left the room " + roomNumber + ".");
+            LOG.info("User " + userRepoById.getUsername() + " left the room " + roomNumber + ".");
             return "/playrooms";
         } else {
-            log.error("User " + userRepoById.getUsername() + " user did not leave the room " + roomNumber + ": the user user is not in the room or game has already started.");
+            LOG.error("User " + userRepoById.getUsername() + " user did not leave the room " + roomNumber + ": the user user is not in the room or game has already started.");
             return "/playrooms/" + roomNumber;
         }
     }
@@ -293,7 +292,7 @@ public class GameController {
     public Long startGame(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         GameRooms gameRoomTop = roomRepo.findTopByNumber(roomNumber);
         if (gameRoomTop == null) {
-            log.error("The room doesn't exist or deleted.");
+            LOG.error("The room doesn't exist or deleted.");
             return -3L;
         }
         List<GameRooms> gameRoomsList = roomRepo.findAllByNumber(roomNumber);
@@ -304,7 +303,7 @@ public class GameController {
         } else if (dateNow.getTime() - gameRoomTop.getTimer() < 60000 & gameRoomsList.size() < 10 & gameRoomTop.getRole().equals("null")) {
             return 60 - (dateNow.getTime() - gameRoomTop.getTimer()) / 1000;
         } else {
-            log.info("The game in the room " + roomNumber + " has begun.");
+            LOG.info("The game in the room " + roomNumber + " has begun.");
             roomRepo.updatePhase(roomNumber, 1);
             return -2L;
         }
@@ -344,7 +343,7 @@ public class GameController {
     @GetMapping("/{roomNumber}/chat")
     public String updateChatPerSec(@PathVariable("roomNumber") Long roomNumber, HttpServletRequest request, Model model) {
         if (roomRepo.findTopByNumber(roomNumber) == null) {
-            log.error("The room doesn't exist or deleted.");
+            LOG.error("The room doesn't exist or deleted.");
             return "";
         }
         Cookie[] cookies = request.getCookies();
@@ -362,7 +361,7 @@ public class GameController {
             try {
                 jsonStr = mapper.writeValueAsString(messages);
             } catch (JsonProcessingException e) {
-                log.error("JSON Processing Exception!");
+                LOG.error("JSON Processing Exception!");
                 e.printStackTrace();
             }
             return jsonStr;
@@ -390,7 +389,7 @@ public class GameController {
             }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         if (roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getRole().equals("observer")) {
-            log.error("A user with the observer role tried to write a chat message.");
+            LOG.error("A user with the observer role tried to write a chat message.");
             return "nope";
         }
         if (roomRepo.findTopByNumber(roomNumber).getPhase() < 3 | (roomRepo.findTopByNumber(roomNumber).getPhase() == 3 & roomRepo.findByNumberAndUserId(roomNumber, userRepoById.getId()).getRole().equals("mafia"))) {
@@ -406,7 +405,7 @@ public class GameController {
             try {
                 jsonStr = mapper.writeValueAsString(messages);
             } catch (JsonProcessingException e) {
-                log.error("JSON Processing Exception!");
+                LOG.error("JSON Processing Exception!");
                 e.printStackTrace();
             }
             return jsonStr;
@@ -435,7 +434,7 @@ public class GameController {
         try {
             jsonStr = mapper.writeValueAsString(users);
         } catch (JsonProcessingException e) {
-            log.error("JSON Processing Exception!");
+            LOG.error("JSON Processing Exception!");
             e.printStackTrace();
         }
         return jsonStr;
@@ -480,7 +479,7 @@ public class GameController {
                         message.setRoomNumber(roomNumber);
                         message.setMessage("sys: " + userRepoById.getUsername() + ": votes for " + yourChoice);
                         messagesRepo.save(message);
-                        log.info("User " + userRepoById.getUsername() + " voted against player " + yourChoice + " |room: " + roomNumber + " | Phase 2.");
+                        LOG.info("User " + userRepoById.getUsername() + " voted against player " + yourChoice + " |room: " + roomNumber + " | Phase 2.");
                     }
                     break;
                 case 3:
@@ -490,19 +489,19 @@ public class GameController {
                             Messages message = new Messages();
                             message.setRoomNumber(roomNumber);
                             message.setMessage("sys: " + userRepoById.getUsername() + ": votes for " + yourChoice);
-                            log.info("User " + userRepoById.getUsername() + " voted against player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: MAFIA.");
+                            LOG.info("User " + userRepoById.getUsername() + " voted against player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: MAFIA.");
                             messagesRepo.save(message);
                             break;
                         case "doctor":
-                            log.info("User " + userRepoById.getUsername() + " cast a vote for player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: DOCTOR.");
+                            LOG.info("User " + userRepoById.getUsername() + " cast a vote for player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: DOCTOR.");
                             roomRepo.setDoctorChoiceOn(roomNumber, true, userRepo.findByUsernameOrId(yourChoice, null).getId());
                             break;
                         case "sheriff":
-                            log.info("User " + userRepoById.getUsername() + " checked player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: SHERIFF.");
+                            LOG.info("User " + userRepoById.getUsername() + " checked player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: SHERIFF.");
                             roomRepo.setDoneMoveReverse(roomNumber, true, userRepoById.getId());
                             return (roomRepo.findByNumberAndUserId(roomNumber, userRepo.findByUsernameOrId(yourChoice, null).getId()).getRole().equals("mafia") ? "You found the mafia!" : "You have not found the mafia!");
                         case "girl":
-                            log.info("User " + userRepoById.getUsername() + " cast a vote for player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: GIRL.");
+                            LOG.info("User " + userRepoById.getUsername() + " cast a vote for player " + yourChoice + " |room: " + roomNumber + " | Phase 3 | role: GIRL.");
                             roomRepo.setGirlChoiceOn(roomNumber, true, userRepo.findByUsernameOrId(yourChoice, null).getId());
                             break;
                     }
@@ -555,7 +554,7 @@ public class GameController {
             messages.setRoomNumber(roomNumber);
             messages.setMessage("Day is coming...");
             messagesRepo.save(messages);
-            log.info("Roles distributed | room: " + roomNumber);
+            LOG.info("Roles distributed | room: " + roomNumber);
         }
         Date dateNow = new Date();
         String mode = "";
@@ -564,8 +563,7 @@ public class GameController {
             if (cookie.getName().equals("userId")) {
                 cookies[0] = cookie;
                 break;
-            } /*else if (cookie.getName().equals("mode"))
-                mode = cookie.getValue();*/
+            }
         }
         User userRepoById = userRepo.findByUsernameOrId(null, Long.parseLong(cookies[0].getValue()));
         String string = "";
@@ -582,10 +580,10 @@ public class GameController {
                 Messages message1 = new Messages();
                 message1.setRoomNumber(roomNumber);
                 if (countMaf == 0) {
-                    log.info("Room: " + roomNumber + " | Civilians won! | Room is under registration.");
+                    LOG.info("Room: " + roomNumber + " | Civilians won! | Room is under registration.");
                     message1.setMessage("Civilians won!!!");
                 } else {
-                    log.info("Room: " + roomNumber + " | Mafia won! | Room is under registration.");
+                    LOG.info("Room: " + roomNumber + " | Mafia won! | Room is under registration.");
                     message1.setMessage("Mafia won!!!");
                 }
                 messagesRepo.save(message1);
@@ -611,7 +609,7 @@ public class GameController {
                     }
                     roomRepo.updateDate(roomNumber, new Date().getTime());
                     roomRepo.setDoneMoveFalse(roomNumber, false);
-                    log.info("Room " + roomNumber + ": phase 1 is over.");
+                    LOG.info("Room " + roomNumber + ": phase 1 is over.");
                 } else {
                     List<GameRooms> roomsOrderNight = roomRepo.findAllByNumberOrderByMafiaChoiceDesc(roomNumber);
                     roomsOrderNight.removeIf(x -> x.getRole().equals("observer"));
@@ -653,7 +651,7 @@ public class GameController {
                         roomRepo.resetGirlChoice(roomNumber, false);
                         messagesRepo.deleteAllByRoomNumber(roomNumber);
                     }
-                    log.info("Room " + roomNumber + ": phase 2 is over.");
+                    LOG.info("Room " + roomNumber + ": phase 2 is over.");
                 } else {
                     List<GameRooms> roomsOrderNight = roomRepo.findAllByNumberOrderByMafiaChoiceDesc(roomNumber);
                     roomsOrderNight.removeIf(x -> x.getRole().equals("observer"));
@@ -705,7 +703,7 @@ public class GameController {
                         messages1.setMessage("Day is coming...");
                         messagesRepo.save(messages1);
                     }
-                    log.info("Room " + roomNumber + ": phase 3 is over.");
+                    LOG.info("Room " + roomNumber + ": phase 3 is over.");
                 } else {
                     List<GameRooms> roomsOrderNight = roomRepo.findAllByNumberOrderByMafiaChoiceDesc(roomNumber);
                     roomsOrderNight.removeIf(x -> x.getRole().equals("observer"));
